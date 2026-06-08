@@ -19,6 +19,10 @@ venv/
 # Introspection output (regenerate with scripts/introspect.py)
 schema/schema.json
 
+# ReliaQuest proprietary reference material — kept local for code generation,
+# NOT redistributed in this public/community repo (© ReliaQuest, LLC).
+Development Reference/
+
 # Node (temporary tooling only)
 node_modules/
 
