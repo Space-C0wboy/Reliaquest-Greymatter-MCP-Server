@@ -85,12 +85,16 @@ def tool_name(op_name: str) -> str:
 
 
 def module_name(folder: str) -> str:
-    """Domain folder name -> snake_case module filename (no extension)."""
+    """Domain folder name -> valid snake_case module filename (no extension)."""
     s = folder.strip().replace("-", " ").replace("/", " ")
     s = re.sub(r"\s+", "_", s)
     s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
-    return re.sub(r"[^a-z0-9_]", "", s.lower())
+    s = re.sub(r"[^a-z0-9_]", "", s.lower())
+    s = re.sub(r"_+", "_", s).strip("_")
+    if not s or s[0].isdigit():
+        s = "mod_" + s
+    return s
 
 
 def _iter_requests(items, top_folder=None):
@@ -175,24 +179,23 @@ def _emit_tool(op: dict) -> str:
     if decls:
         desc += " Variables: " + ", ".join(d[0] for d in decls) + "."
     if example:
-        desc = desc + f" Example variables: {example}"
-    desc = desc.replace('"', '\\"')
+        desc += f" Example variables: {example}"
 
     params: list[str] = []
     var_items: list[str] = []
     ordered = sorted(decls, key=lambda d: not d[2])
     for var_name, gql_type, required in ordered:
         annot = py_annotation(gql_type)
-        pdesc = f"GraphQL: {gql_type}".replace('"', '\\"')
+        pdesc = f"GraphQL: {gql_type}"
         if required:
             params.append(
-                f'        {var_name}: Annotated[{annot}, Field(description="{pdesc}")],'
+                f"        {var_name}: Annotated[{annot}, Field(description={json.dumps(pdesc)})],"
             )
         else:
             params.append(
-                f'        {var_name}: Annotated[{annot}, Field(default=None, description="{pdesc}")] = None,'
+                f"        {var_name}: Annotated[{annot}, Field(default=None, description={json.dumps(pdesc)})] = None,"
             )
-        var_items.append(f'"{var_name}": {var_name}')
+        var_items.append(f"{json.dumps(var_name)}: {var_name}")
     params.append(
         '        customer_slug: Annotated[str | None, Field(default=None, '
         'description="Override the x-reliaquest-customer (OpCo) header.")] = None,'
@@ -200,11 +203,11 @@ def _emit_tool(op: dict) -> str:
     var_dict = "{" + ", ".join(var_items) + "}"
     indent = "    " if op["kind"] == "mutation" else ""
 
-    body = f'''{indent}    @mcp.tool(name="{name}", description="{desc}")
+    body = f'''{indent}    @mcp.tool(name={json.dumps(name)}, description={json.dumps(desc)})
 {indent}    async def {name}(
 {chr(10).join((indent + p) for p in params)}
 {indent}    ) -> Any:
-{indent}        return await execute_operation(_DOC["{op['op_name']}"], {var_dict}, customer_slug=customer_slug)
+{indent}        return await execute_operation(_DOC[{json.dumps(op["op_name"])}], {var_dict}, customer_slug=customer_slug)
 '''
     return body
 
@@ -214,7 +217,8 @@ def _emit_module(folder: str, ops: list[dict]) -> str:
     alldocs = "{\n" + "\n".join(
         f"    {json.dumps(k)}: {json.dumps(v)}," for k, v in docs.items()
     ) + "\n}"
-    out = _HEADER.replace("{folder}", folder).replace("{ALLDOCS}", alldocs)
+    safe_folder = folder.replace("\\", "\\\\").replace('"', '\\"')
+    out = _HEADER.replace("{folder}", safe_folder).replace("{ALLDOCS}", alldocs)
 
     queries = [o for o in ops if o["kind"] == "query"]
     mutations = [o for o in ops if o["kind"] == "mutation"]
@@ -239,6 +243,24 @@ def generate(
 ) -> None:
     collection = json.loads(Path(collection_path).read_text(encoding="utf-8"))
     by_module = _collect(collection)
+
+    for mod, ops in by_module.items():
+        seen_ops: dict[str, bool] = {}
+        seen_tools: dict[str, str] = {}
+        for op in ops:
+            if op["op_name"] in seen_ops:
+                raise ValueError(
+                    f"Duplicate GraphQL operation name {op['op_name']!r} in module {mod!r}; "
+                    "cannot generate unambiguous tools."
+                )
+            seen_ops[op["op_name"]] = True
+            tn = tool_name(op["op_name"])
+            if tn in seen_tools:
+                raise ValueError(
+                    f"Tool-name collision {tn!r} in module {mod!r} from operations "
+                    f"{seen_tools[tn]!r} and {op['op_name']!r}."
+                )
+            seen_tools[tn] = op["op_name"]
 
     out_dir.mkdir(parents=True, exist_ok=True)
     for old in out_dir.glob("*.py"):

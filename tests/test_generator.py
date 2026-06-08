@@ -1,5 +1,8 @@
 import importlib.util
+import json
 from pathlib import Path
+
+import pytest
 
 SCRIPT = Path("scripts/generate_from_collection.py")
 
@@ -79,3 +82,56 @@ def test_generated_module_imports_and_registers(tmp_path):
     )
     for py in out_dir.glob("*.py"):
         compile(py.read_text(), str(py), "exec")
+
+
+def test_module_name_robustness():
+    gen = _load_generator()
+    assert gen.module_name("API Keys") == "api_keys"
+    assert gen.module_name("DRP Alerts") == "drp_alerts"
+    assert gen.module_name("Discover-Tasks") == "discover_tasks"
+    name = gen.module_name("123 Weird")
+    assert name.isidentifier() and not name[0].isdigit()
+
+
+def test_duplicate_operation_raises(tmp_path):
+    gen = _load_generator()
+    collection = {
+        "info": {"name": "Dup"},
+        "item": [
+            {"name": "Things", "item": [
+                {"name": "Queries", "item": [
+                    {"name": "thing", "request": {"method": "POST", "body": {"mode": "graphql",
+                        "graphql": {"query": "query thing { a }", "variables": ""}}}},
+                    {"name": "thing2", "request": {"method": "POST", "body": {"mode": "graphql",
+                        "graphql": {"query": "query thing { b }", "variables": ""}}}},
+                ]},
+            ]},
+        ],
+    }
+    col = tmp_path / "dup.json"
+    col.write_text(json.dumps(collection), encoding="utf-8")
+    with pytest.raises(ValueError):
+        gen.generate(collection_path=col, out_dir=tmp_path / "_g", endpoints_doc=tmp_path / "E.md")
+
+
+def test_emitted_code_safe_with_special_chars(tmp_path):
+    """Folder names / examples with quotes, backslashes, newlines must not break emitted code."""
+    gen = _load_generator()
+    collection = {
+        "info": {"name": "Weird"},
+        "item": [
+            {"name": 'Weird "Folder"\\Name', "item": [
+                {"name": "Queries", "item": [
+                    {"name": "doThing", "request": {"method": "POST", "body": {"mode": "graphql",
+                        "graphql": {"query": "query doThing($q: String) { a }",
+                                     "variables": "{\"q\": \"line1\\nline2\"}"}}}},
+                ]},
+            ]},
+        ],
+    }
+    col = tmp_path / "weird.json"
+    col.write_text(json.dumps(collection), encoding="utf-8")
+    out_dir = tmp_path / "_g"
+    gen.generate(collection_path=col, out_dir=out_dir, endpoints_doc=tmp_path / "E.md")
+    for py in out_dir.glob("*.py"):
+        compile(py.read_text(), str(py), "exec")  # must not raise SyntaxError
