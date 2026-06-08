@@ -156,7 +156,7 @@ Copy `.env.example` to `.env` and set:
 | `GREYMATTER_BASE_URL` | no | `https://greymatter.myreliaquest.com/graphql` | GraphQL endpoint |
 | `GREYMATTER_CUSTOMER_SLUG` | no | _(none)_ | Default `x-reliaquest-customer` (OpCo) header for multi-OpCo accounts |
 | `GREYMATTER_READ_ONLY` | no | `false` | When true, no mutation tools are registered and `graphql_query` rejects mutations |
-| `GREYMATTER_TIMEOUT` | no | `30` | Request timeout in seconds |
+| `GREYMATTER_TIMEOUT` | no | `60` | Request timeout in seconds (some mutations are slow server-side) |
 | `LOG_LEVEL` | no | `INFO` | Logging level |
 | `MCP_HTTP_HOST` / `MCP_HTTP_PORT` | no | `127.0.0.1:8765` | HTTP transport bind |
 
