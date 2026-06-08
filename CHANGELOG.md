@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3] - 2026-06-08
+### Changed
+- Extensive teaching-style code documentation across the codebase (module/function
+  docstrings + inline comments), including comments emitted into the generated tool
+  modules. No behavior change.
+- `User-Agent` header now derives from the package `__version__` instead of a hardcoded
+  string.
+
 ## [0.1.2] - 2026-06-08
 ### Fixed
 - Generator now prunes orphaned GraphQL variable declarations after a field/selection is
