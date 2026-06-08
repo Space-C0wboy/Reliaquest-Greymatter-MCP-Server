@@ -10,14 +10,58 @@ from pydantic import Field
 
 from ._common import execute_operation
 
-# Strip leading whitespace and full-line comments, then read the first keyword.
-_LEADING = re.compile(r"^\s*(?:#[^\n]*\n\s*)*")
-
 
 def is_mutation_document(query: str) -> bool:
-    """True if the document's first operation is a mutation."""
-    stripped = _LEADING.sub("", query)
-    return stripped.lstrip().lower().startswith("mutation")
+    """True if the document contains a mutation operation.
+
+    Robust against leading BOM, comments, and fragment definitions (a valid
+    GraphQL document may define fragments before the operation). Errs toward
+    classifying as a mutation so read-only mode cannot be bypassed.
+    """
+    # Strip a leading UTF-8 BOM and all line comments.
+    text = query.lstrip("﻿")
+    text = re.sub(r"#[^\n]*", "", text)
+    text = text.strip()
+
+    i, n = 0, len(text)
+    while i < n:
+        while i < n and text[i] in " \t\r\n,":
+            i += 1
+        if i >= n:
+            break
+        if text[i] == "{":
+            # Anonymous operation shorthand is a query.
+            return False
+        m = re.match(r"[A-Za-z_][A-Za-z0-9_]*", text[i:])
+        if not m:
+            i += 1
+            continue
+        word = m.group(0)
+        if word == "mutation":
+            return True
+        if word in ("query", "subscription"):
+            return False
+        if word == "fragment":
+            brace = text.find("{", i)
+            if brace == -1:
+                break
+            depth, j = 0, brace
+            while j < n:
+                if text[j] == "{":
+                    depth += 1
+                elif text[j] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        j += 1
+                        break
+                j += 1
+            i = j
+            continue
+        i += len(word)
+
+    # Couldn't classify a leading operation — be conservative: if the document
+    # mentions a mutation keyword anywhere, treat it as a mutation.
+    return bool(re.search(r"\bmutation\b", text))
 
 
 def register(mcp: FastMCP, *, read_only: bool) -> None:

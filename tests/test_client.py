@@ -87,3 +87,37 @@ async def test_graphql_error_joins_multiple_messages(httpx_mock):
     msg = str(ei.value)
     assert "first" in msg and "second" in msg
     await client.close()
+
+
+def test_parse_retry_after_seconds_and_cap():
+    from greymatter_mcp.client import _MAX_RETRY_AFTER_SECONDS, _parse_retry_after
+    assert _parse_retry_after("2") == 2.0
+    assert _parse_retry_after(None) is None
+    assert _parse_retry_after("not-a-date") is None
+    # The client caps applied Retry-After at _MAX_RETRY_AFTER_SECONDS; the parser
+    # itself returns the raw value, so just assert it parses large values.
+    assert _parse_retry_after("120") == 120.0
+    assert _MAX_RETRY_AFTER_SECONDS == 60.0
+
+
+async def test_raises_after_exhausting_retries_on_5xx(httpx_mock):
+    for _ in range(3):
+        httpx_mock.add_response(status_code=503)
+    client = GreyMatterClient(_cfg())
+    with pytest.raises(GreyMatterAPIError):
+        await client.execute("query { x }")
+    assert len(httpx_mock.get_requests()) == 3
+    await client.close()
+
+
+async def test_non_json_error_body_is_handled(httpx_mock):
+    # 500 is retryable, so every attempt returns the non-JSON body; the final
+    # attempt must surface a GreyMatterAPIError without choking on the text body.
+    for _ in range(3):
+        httpx_mock.add_response(
+            status_code=500, text="upstream boom", headers={"content-type": "text/plain"}
+        )
+    client = GreyMatterClient(_cfg())
+    with pytest.raises(GreyMatterAPIError):
+        await client.execute("query { x }")
+    await client.close()
