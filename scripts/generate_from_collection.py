@@ -342,7 +342,9 @@ def generate(
         old.unlink()
 
     for mod, ops in by_module.items():
-        (out_dir / f"{mod}.py").write_text(_emit_module(ops[0]["folder"], ops), encoding="utf-8")
+        (out_dir / f"{mod}.py").write_text(
+            _emit_module(ops[0]["folder"], ops), encoding="utf-8", newline="\n"
+        )
 
     mod_names = list(by_module.keys())
     init_lines = [
@@ -357,7 +359,7 @@ def generate(
         "]",
         "",
     ]
-    (out_dir / "__init__.py").write_text("\n".join(init_lines), encoding="utf-8")
+    (out_dir / "__init__.py").write_text("\n".join(init_lines), encoding="utf-8", newline="\n")
 
     endpoints_doc.parent.mkdir(parents=True, exist_ok=True)
     doc_lines = ["# GreyMatter MCP — Tool Catalog", "",
@@ -373,7 +375,7 @@ def generate(
             doc_lines.append(f"| `{tool_name(op['op_name'])}` | {op['kind']} | `{op['op_name']}` |")
         doc_lines.append("")
     doc_lines.insert(4, f"**Total operations:** {total}\n")
-    endpoints_doc.write_text("\n".join(doc_lines), encoding="utf-8")
+    endpoints_doc.write_text("\n".join(doc_lines), encoding="utf-8", newline="\n")
 
     print(f"Generated {total} tools across {len(by_module)} modules into {out_dir}")
 
