@@ -2,6 +2,7 @@ name: Release
 on:
   push:
     tags: ["v*"]
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,3 +17,20 @@ jobs:
         with:
           name: dist
           path: dist/*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    # Must match the "Environment name" configured for the PyPI trusted publisher.
+    environment:
+      name: pypi
+      url: https://pypi.org/project/greymatter-mcp/
+    permissions:
+      # OIDC token used by PyPI trusted publishing — no API token/secret needed.
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
