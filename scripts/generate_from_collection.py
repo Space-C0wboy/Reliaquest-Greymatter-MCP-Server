@@ -47,6 +47,19 @@ OVERRIDES: dict[str, str] = {
     "runPlaybook": "Execute a predefined playbook (Respond capability) with the given inputs.",
     "rateLimit": "Return current GreyMatter API rate-limit usage (limit is 5000 points/hour per company account).",
     "cases": "List cases (with nested activity/children/comments connections). The OUTER list page size is `first3` (set it to bound results, e.g. first3=25); `first`/`first1`/`first2` page the nested connections.",
+    "createCase": "Create a case. NOTE: `state` is effectively REQUIRED despite being schema-optional — omitting it makes the GreyMatter API return success=false with no error. Always pass `state` (e.g. NEW). `type` is required (GENERAL, DISCOVER_EXPOSURE, TEAMMATE); `severity` optional (INFORMATIONAL..CRITICAL).",
+}
+
+# Minimal response selections for mutations whose vendor selection set is so heavy the
+# round-trip can exceed the MCP client timeout (issue #1). Keyed by GraphQL operation name;
+# value is the replacement selection set (including braces) for the root mutation field.
+# Trimming also orphans variables that only the old selection used — _prune_unused_variables
+# (applied afterward) removes those.
+MUTATION_RESPONSE_TRIMS: dict[str, str] = {
+    "retainIncident": "{ incident { id retained state } success }",
+    "releaseIncident": "{ incident { id retained state } success }",
+    "unresolveIncident": "{ incident { id state } success }",
+    "updateTaskRetainedStatus": "{ success task { id retained state } }",
 }
 
 # Server-side-bug workarounds: drop specific field selections from a given operation's
@@ -143,6 +156,73 @@ def _strip_field_selection(query: str, field_name: str) -> str:
             query = query[:start] + query[j:]
 
 
+def _prune_unused_variables(query: str) -> str:
+    """Drop variable declarations from the operation signature that are no longer
+    referenced in the body (e.g. after a field/selection was stripped)."""
+    m = _OP_RE.match(query)
+    if not m or not m.group(3):
+        return query
+    sig = m.group(3)
+    sig_start, sig_end = m.start(3), m.end(3)
+    body = query[sig_end:]
+    decls = parse_variable_decls(sig)
+    if not decls:
+        return query
+    used = [
+        (name, gql_type)
+        for name, gql_type, _req in decls
+        if re.search(r"(?<![A-Za-z0-9_])\$" + re.escape(name) + r"(?![A-Za-z0-9_])", body)
+    ]
+    if len(used) == len(decls):
+        return query
+    new_sig = ("(" + ", ".join(f"${n}: {t}" for n, t in used) + ")") if used else ""
+    return query[:sig_start] + new_sig + query[sig_end:]
+
+
+def _set_mutation_selection(query: str, op_name: str, selection: str) -> str:
+    """Replace the selection set of the root mutation field `op_name` with `selection`.
+
+    Finds the *field invocation* of op_name (not the operation name): an occurrence of
+    op_name as a whole word followed (after an optional balanced (...) args block and
+    whitespace) by '{', then replaces that '{...}' block.
+    """
+    for mt in re.finditer(r"(?<![A-Za-z0-9_])" + re.escape(op_name) + r"(?![A-Za-z0-9_])", query):
+        # Skip the operation-name occurrence (e.g. "mutation retainIncident") so we
+        # only ever rewrite the *field invocation*; otherwise we'd replace the whole
+        # operation body when the operation and root field share a name.
+        if re.search(r"(?:mutation|query)\s+$", query[: mt.start()]):
+            continue
+        i, n = mt.end(), len(query)
+        while i < n and query[i] in " \t\r\n":
+            i += 1
+        if i < n and query[i] == "(":  # skip balanced args
+            depth = 0
+            while i < n:
+                if query[i] == "(":
+                    depth += 1
+                elif query[i] == ")":
+                    depth -= 1
+                    if depth == 0:
+                        i += 1
+                        break
+                i += 1
+            while i < n and query[i] in " \t\r\n":
+                i += 1
+        if i < n and query[i] == "{":  # found the selection block; find its match
+            depth, j = 0, i
+            while j < n:
+                if query[j] == "{":
+                    depth += 1
+                elif query[j] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        j += 1
+                        break
+                j += 1
+            return query[:i] + selection + query[j:]
+    return query
+
+
 def tool_name(op_name: str) -> str:
     """camelCase / PascalCase GraphQL field -> snake_case tool name."""
     s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", op_name)
@@ -187,6 +267,10 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
             continue
         for _excl in FIELD_EXCLUSIONS.get(op_name, []):
             query = _strip_field_selection(query, _excl)
+        if kind == "mutation" and op_name in MUTATION_RESPONSE_TRIMS:
+            query = _set_mutation_selection(query, op_name, MUTATION_RESPONSE_TRIMS[op_name])
+        query = _prune_unused_variables(query)
+        kind, op_name, sig = parse_operation(query)   # re-parse: sig now reflects pruning
         example = gql.get("variables") or ""
         mod = module_name(folder)
         by_module.setdefault(mod, []).append(
