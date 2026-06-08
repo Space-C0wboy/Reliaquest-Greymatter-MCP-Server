@@ -148,15 +148,19 @@ affected by **server-side issues in the GreyMatter API itself** (not by this ser
 observed during live testing. They are documented here and have been reported to
 ReliaQuest:
 
-- **`cases`** — the query fails with *"An unexpected error has occurred"* at
-  `node.discoverExposure`. The GreyMatter resolver errors on that field (rather than
-  returning null) for accounts not entitled to the Discover/exposure capability, which
-  fails the whole query. **Workaround:** use `graphql_query` with a `cases` document
-  that omits the `discoverExposure { … }` selection.
-- **`playbooks`** — the query fails to serialize its own enum:
+- **`cases`** (and single-item **`case`**) — the underlying query errors with
+  *"An unexpected error has occurred"* at `node.discoverExposure`. The GreyMatter
+  resolver errors on that field (rather than returning null) for accounts not entitled
+  to the Discover/exposure capability, which fails the whole query. **Workaround
+  (built in):** this server now omits the `discoverExposure { … }` sub-field from the
+  generated `cases`/`case` queries, so the tools work out of the box. If you need that
+  field, request it explicitly via `graphql_query`.
+- **`playbooks`** — the underlying query fails to serialize its own enum:
   *Invalid input for enum `TechnologyType`. Unknown value `MOBILE_DEVICE_MANAGEMENT`*
-  under `supportedTechnologies.type`. **Workaround:** use `graphql_query` with a
-  `playbooks` document that omits the `supportedTechnologies { … }` selection.
+  under `supportedTechnologies.type`. **Workaround (built in):** this server now omits
+  the `supportedTechnologies { … }` sub-field from the generated `playbooks` query, so
+  the tool works (132 results). If you need that field, request it explicitly via
+  `graphql_query`.
 - **`greymatter_fields`** and the single-item **`drp_alert`** can return
   *"An unexpected error has occurred"* depending on account entitlement.
 

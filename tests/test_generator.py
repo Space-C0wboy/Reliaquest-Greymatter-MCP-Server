@@ -114,6 +114,30 @@ def test_duplicate_operation_raises(tmp_path):
         gen.generate(collection_path=col, out_dir=tmp_path / "_g", endpoints_doc=tmp_path / "E.md")
 
 
+def test_strip_field_selection_removes_block():
+    gen = _load_generator()
+    q = "query x { a node { discoverExposure { id name } keep } }"
+    out = gen._strip_field_selection(q, "discoverExposure")
+    assert "discoverExposure" not in out
+    assert "keep" in out and "node" in out
+
+
+def test_strip_field_selection_removes_scalar():
+    gen = _load_generator()
+    q = "query x { a supportedTechnologies type b }"
+    out = gen._strip_field_selection(q, "supportedTechnologies")
+    assert "supportedTechnologies" not in out
+    assert " a " in out and " b " in out
+
+
+def test_strip_field_selection_whole_identifier_only():
+    gen = _load_generator()
+    q = "query x { discoverExposureSummary { id } other }"
+    out = gen._strip_field_selection(q, "discoverExposure")
+    # must NOT remove the longer identifier that merely starts with the name
+    assert "discoverExposureSummary" in out
+
+
 def test_emitted_code_safe_with_special_chars(tmp_path):
     """Folder names / examples with quotes, backslashes, newlines must not break emitted code."""
     gen = _load_generator()
