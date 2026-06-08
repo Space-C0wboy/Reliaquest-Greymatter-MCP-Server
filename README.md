@@ -99,13 +99,6 @@ registered.
 - **`rate_limit`** reports your remaining API budget (the API allows 5000 points/hour per
   company account; each returned node counts as one point).
 
-> [!NOTE]
-> Two tools have a built-in workaround for **server-side bugs in the GreyMatter API**: the
-> `cases`/`case` queries omit the `discoverExposure` field and `playbooks` omits
-> `supportedTechnologies`, because the API errors when those are selected. The data is
-> still reachable via `graphql_query`. See [Known limitations](#known-limitations) and
-> [`docs/reliaquest-api-issues.md`](docs/reliaquest-api-issues.md).
-
 See [`docs/ENDPOINTS.md`](docs/ENDPOINTS.md) for the full tool ↔ GraphQL-operation mapping.
 
 ## Quick start
@@ -239,23 +232,6 @@ entity returned counts as **1 point**, so large paginated queries consume points
 Use the **`rate_limit`** tool to check your current usage.
 
 ## Known limitations
-
-The tools mirror the vendor's API collection. A few operations are affected by
-**server-side issues in the GreyMatter API itself** (not by this server), observed during
-live testing. They are documented here and reported to ReliaQuest
-([`docs/reliaquest-api-issues.md`](docs/reliaquest-api-issues.md)):
-
-- **`cases` / `case`** — the underlying query errors at `node.discoverExposure` for
-  accounts not entitled to the Discover/exposure capability (the resolver raises instead of
-  returning null, failing the whole query). **Workaround (built in):** this server omits
-  the `discoverExposure` field, so the tools work out of the box. Request that field via
-  `graphql_query` if you need it.
-- **`playbooks`** — the underlying query fails to serialize its own enum
-  (`TechnologyType` value `MOBILE_DEVICE_MANAGEMENT`) under `supportedTechnologies.type`.
-  **Workaround (built in):** this server omits the `supportedTechnologies` field, so the
-  tool works. Request that field via `graphql_query` if you need it.
-- **`greymatter_fields`** and the single-item **`drp_alert`** can return *"An unexpected
-  error has occurred"* depending on account entitlement.
 
 **Entitlement-gated tools.** Some tools return *"You don't have access to this item"*
 unless your account/API key is licensed for the relevant module — e.g. `drp_alerts`,

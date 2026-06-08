@@ -102,8 +102,8 @@ MUTATION_RESPONSE_TRIMS: dict[str, str] = {
 }
 
 # Server-side-bug workarounds: drop specific field selections from a given operation's
-# GraphQL document because the GreyMatter API errors out when they are requested (see
-# docs/reliaquest-api-issues.md). Keyed by operation name -> list of field names to remove
+# GraphQL document because the GreyMatter API errors out when they are requested. Keyed by
+# operation name -> list of field names to remove
 # from that operation's document. _collect applies this *first* in its pipeline (before the
 # mutation trim and the variable prune), using _strip_field_selection to cut each named
 # field plus its sub-selection. The dropped data isn't lost to users — it remains fetchable
