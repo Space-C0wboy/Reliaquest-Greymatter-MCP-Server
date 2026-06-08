@@ -26,6 +26,8 @@ Selecting `cases { edges { node { discoverExposure { ... } } } }` returns:
   (returns the full case list normally).
 - **Expected:** for an account not entitled to the Discover/exposure capability, the
   field should resolve to `null`, not raise an error that fails the whole query.
+- **Workaround applied in this server:** the field is excluded from the generated query
+  (see `FIELD_EXCLUSIONS` in `scripts/generate_from_collection.py`).
 
 ## 2. `playbooks` — enum serialization failure on `TechnologyType`
 
@@ -43,6 +45,8 @@ Selecting `playbooks { supportedTechnologies { type } }` returns:
   (returns 132 playbooks).
 - **Expected:** `MOBILE_DEVICE_MANAGEMENT` should be a valid member of the
   `TechnologyType` enum (schema/data mismatch).
+- **Workaround applied in this server:** the field is excluded from the generated query
+  (see `FIELD_EXCLUSIONS` in `scripts/generate_from_collection.py`).
 
 ## 3. `greymatterFields` and single-item `drpAlert` — generic resolver error
 

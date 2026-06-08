@@ -46,6 +46,23 @@ OVERRIDES: dict[str, str] = {
     "detectionRules": "List deployed detection rules across GreyMatter integrations (includes MITRE ATT&CK mapping where available).",
     "runPlaybook": "Execute a predefined playbook (Respond capability) with the given inputs.",
     "rateLimit": "Return current GreyMatter API rate-limit usage (limit is 5000 points/hour per company account).",
+    "cases": "List cases (with nested activity/children/comments connections). The OUTER list page size is `first3` (set it to bound results, e.g. first3=25); `first`/`first1`/`first2` page the nested connections.",
+}
+
+# Server-side-bug workarounds: drop specific field selections from a given operation's
+# GraphQL document because the GreyMatter API errors when they are requested (see
+# docs/reliaquest-api-issues.md). Keyed by operation name -> field names to remove.
+# The dropped data remains fetchable via the graphql_query escape hatch.
+FIELD_EXCLUSIONS: dict[str, list[str]] = {
+    "case": ["discoverExposure"],
+    "cases": ["discoverExposure"],
+    "playbooks": ["supportedTechnologies"],
+}
+
+# Human-readable fragment for the appended description note, per excluded field.
+_EXCLUSION_NOTES: dict[str, str] = {
+    "discoverExposure": "`discoverExposure`",
+    "supportedTechnologies": "`supportedTechnologies`",
 }
 
 _OP_RE = re.compile(r"^\s*(query|mutation)\s+([A-Za-z0-9_]+)?\s*(\([^)]*\))?", re.DOTALL)
@@ -98,6 +115,34 @@ def py_annotation(gql_type: str) -> str:
     return "Any" if required else "Any | None"
 
 
+def _strip_field_selection(query: str, field_name: str) -> str:
+    """Remove every selection of `field_name` (plus its `{...}` sub-block, if any) from
+    a GraphQL document. Matches the field as a whole identifier so it never touches a
+    substring or an argument/variable name that merely contains it."""
+    pattern = re.compile(r"(?<![A-Za-z0-9_])" + re.escape(field_name) + r"(?![A-Za-z0-9_])")
+    while True:
+        m = pattern.search(query)
+        if not m:
+            return query
+        start, j = m.start(), m.end()
+        while j < len(query) and query[j] in " \t\r\n":
+            j += 1
+        if j < len(query) and query[j] == "{":
+            depth, k = 0, j
+            while k < len(query):
+                if query[k] == "{":
+                    depth += 1
+                elif query[k] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        k += 1
+                        break
+                k += 1
+            query = query[:start] + query[k:]
+        else:
+            query = query[:start] + query[j:]
+
+
 def tool_name(op_name: str) -> str:
     """camelCase / PascalCase GraphQL field -> snake_case tool name."""
     s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", op_name)
@@ -140,6 +185,8 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
         kind, op_name, sig = parse_operation(query)
         if not op_name:
             continue
+        for _excl in FIELD_EXCLUSIONS.get(op_name, []):
+            query = _strip_field_selection(query, _excl)
         example = gql.get("variables") or ""
         mod = module_name(folder)
         by_module.setdefault(mod, []).append(
@@ -202,6 +249,12 @@ def _emit_tool(op: dict) -> str:
         desc += " Variables: " + ", ".join(d[0] for d in decls) + "."
     if example:
         desc += f" Example variables: {example}"
+
+    excluded = FIELD_EXCLUSIONS.get(op["op_name"], [])
+    if excluded:
+        fields = ", ".join(_EXCLUSION_NOTES.get(f, f"`{f}`") for f in excluded)
+        desc += (f" NOTE: {fields} is omitted from this query as a workaround for a "
+                 "GreyMatter server-side error; request it via graphql_query if you need it.")
 
     params: list[str] = []
     var_items: list[str] = []
