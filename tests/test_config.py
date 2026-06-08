@@ -14,7 +14,7 @@ def test_minimal_config(monkeypatch):
     assert cfg.base_url == "https://greymatter.myreliaquest.com/graphql"
     assert cfg.customer_slug is None
     assert cfg.read_only is False
-    assert cfg.timeout == 30.0
+    assert cfg.timeout == 60.0
 
 
 def test_missing_api_key_raises(monkeypatch):
