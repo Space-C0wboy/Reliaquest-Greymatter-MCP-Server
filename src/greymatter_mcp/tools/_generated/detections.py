@@ -68,7 +68,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
     ) -> Any:
         return await execute_operation(_DOC["customerDetections"], {"after": after, "filter": filter, "first": first, "order": order}, customer_slug=customer_slug)
 
-    @mcp.tool(name="detection_rules", description="Detections \u00b7 query detectionRules. Variables: after, detectionRuleOrder, filter, first. Example variables: {\"after\":\"T18w\",\"detectionRuleOrder\":{\"direction\":\"ASC\",\"orderBy\":\"ID\"},\"filter\":{\"authors\":{\"connectorId\":\"<ID HERE>\",\"reliaQuest\":true},\"deployedLocations\":{\"connectorId\":\"<ID HERE>\",\"digitalRiskProtection\":true,\"greymatter\":true},\"endDate\":\"2026-05-01T00:00:00.000Z\",\"ids\":[\"<ID HERE>\"],\"killch...")
+    @mcp.tool(name="detection_rules", description="List deployed detection rules across GreyMatter integrations (includes MITRE ATT&CK mapping where available). Variables: after, detectionRuleOrder, filter, first. Example variables: {\"after\":\"T18w\",\"detectionRuleOrder\":{\"direction\":\"ASC\",\"orderBy\":\"ID\"},\"filter\":{\"authors\":{\"connectorId\":\"<ID HERE>\",\"reliaQuest\":true},\"deployedLocations\":{\"connectorId\":\"<ID HERE>\",\"digitalRiskProtection\":true,\"greymatter\":true},\"endDate\":\"2026-05-01T00:00:00.000Z\",\"ids\":[\"<ID HERE>\"],\"killch...")
     async def detection_rules(
         after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
         detectionRuleOrder: Annotated[Any | None, Field(default=None, description="GraphQL: DetectionRuleOrder")] = None,

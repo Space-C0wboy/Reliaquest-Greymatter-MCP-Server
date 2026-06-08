@@ -122,7 +122,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["rerunAllFailedTasksForPlaybookRun"], {"playbookRunId": playbookRunId}, customer_slug=customer_slug)
 
-        @mcp.tool(name="run_playbook", description="Playbooks \u00b7 mutation runPlaybook. Variables: input. Example variables: {\"input\":{\"aiChatId\":\"<ID HERE>\",\"drpAlertShortCode\":\"\",\"input\":{\"integrationIds\":[\"<ID HERE>\"],\"playbookVariables\":{\"field\":\"\",\"values\":[\"\"]}},\"originatorId\":\"<ID HERE>\",\"platform\":\"WEB\",\"playbookAction\":\"ADD_DOMAIN_TO_LIST\",\"reason\":\"\",\"tempRuleId\":\"\",\"ticketNumber\":\"\"}}")
+        @mcp.tool(name="run_playbook", description="Execute a predefined playbook (Respond capability) with the given inputs. Variables: input. Example variables: {\"input\":{\"aiChatId\":\"<ID HERE>\",\"drpAlertShortCode\":\"\",\"input\":{\"integrationIds\":[\"<ID HERE>\"],\"playbookVariables\":{\"field\":\"\",\"values\":[\"\"]}},\"originatorId\":\"<ID HERE>\",\"platform\":\"WEB\",\"playbookAction\":\"ADD_DOMAIN_TO_LIST\",\"reason\":\"\",\"tempRuleId\":\"\",\"ticketNumber\":\"\"}}")
         async def run_playbook(
             input: Annotated[Any, Field(description="GraphQL: RunPlaybookInput!")],
             customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,

@@ -29,7 +29,7 @@ _DOC: dict[str, str] = {
 
 
 def register(mcp: FastMCP, *, read_only: bool) -> None:
-    @mcp.tool(name="task", description="Tasks \u00b7 query task. Variables: after, filter, first, order, after1, filter1, first1, order1, after2, filter2, first2, order2, after3, filter3, first3, order3, after4, filter4, first4, order4, after5, filter5, first5, order5, after6, filter6, first6, order6, after7, filter7, first7, order7, after8, first8, after9, first9, after10, filter8, first10, order8, after11, filter9, first11, order9, after12, filter10, first12, order10, by. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"CREATED\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderByList\":[\"CREATED_AT\"]},\"after1\":\"T18w\",\"filter1\":{\"customers\":[\"<ID HERE>\"],\"ids\":[\"<ID HERE>\"],\"name\":\"\",\"pods\":[\"<ID ...")
+    @mcp.tool(name="task", description="Fetch a single task by id, including comments. Variables: after, filter, first, order, after1, filter1, first1, order1, after2, filter2, first2, order2, after3, filter3, first3, order3, after4, filter4, first4, order4, after5, filter5, first5, order5, after6, filter6, first6, order6, after7, filter7, first7, order7, after8, first8, after9, first9, after10, filter8, first10, order8, after11, filter9, first11, order9, after12, filter10, first12, order10, by. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"CREATED\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderByList\":[\"CREATED_AT\"]},\"after1\":\"T18w\",\"filter1\":{\"customers\":[\"<ID HERE>\"],\"ids\":[\"<ID HERE>\"],\"name\":\"\",\"pods\":[\"<ID ...")
     async def task(
         by: Annotated[Any, Field(description="GraphQL: TaskBy!")],
         after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
@@ -84,7 +84,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
     ) -> Any:
         return await execute_operation(_DOC["task"], {"by": by, "after": after, "filter": filter, "first": first, "order": order, "after1": after1, "filter1": filter1, "first1": first1, "order1": order1, "after2": after2, "filter2": filter2, "first2": first2, "order2": order2, "after3": after3, "filter3": filter3, "first3": first3, "order3": order3, "after4": after4, "filter4": filter4, "first4": first4, "order4": order4, "after5": after5, "filter5": filter5, "first5": first5, "order5": order5, "after6": after6, "filter6": filter6, "first6": first6, "order6": order6, "after7": after7, "filter7": filter7, "first7": first7, "order7": order7, "after8": after8, "first8": first8, "after9": after9, "first9": first9, "after10": after10, "filter8": filter8, "first10": first10, "order8": order8, "after11": after11, "filter9": filter9, "first11": first11, "order9": order9, "after12": after12, "filter10": filter10, "first12": first12, "order10": order10}, customer_slug=customer_slug)
 
-    @mcp.tool(name="tasks", description="Tasks \u00b7 query tasks. Variables: after, first, taskFilter, taskOrder. Example variables: {\"after\":\"T18w\",\"first\":10,\"taskFilter\":{\"acknowledged\":true,\"assignees\":[\"<ID HERE>\"],\"closed\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"notAssignees\":[\"<ID HERE>\"],\"prioritie...")
+    @mcp.tool(name="tasks", description="List tasks (non-security / engineering items) with filtering and ordering. Relay-paginated. Variables: after, first, taskFilter, taskOrder. Example variables: {\"after\":\"T18w\",\"first\":10,\"taskFilter\":{\"acknowledged\":true,\"assignees\":[\"<ID HERE>\"],\"closed\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"notAssignees\":[\"<ID HERE>\"],\"prioritie...")
     async def tasks(
         after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
         first: Annotated[int | None, Field(default=None, description="GraphQL: Int")] = None,
@@ -106,7 +106,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["acknowledgeTask"], {"input": input, "after": after, "filter": filter, "first": first, "order": order}, customer_slug=customer_slug)
 
-        @mcp.tool(name="add_task_comment", description="Tasks \u00b7 mutation addTaskComment. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"comment\":\"\",\"taskId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="add_task_comment", description="Add a comment to a task. input: TaskCommentInput { taskId, comment }. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"comment\":\"\",\"taskId\":\"<ID HERE>\"}}")
         async def add_task_comment(
             input: Annotated[Any, Field(description="GraphQL: TaskCommentInput!")],
             after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
@@ -117,7 +117,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["addTaskComment"], {"input": input, "after": after, "filter": filter, "first": first, "order": order}, customer_slug=customer_slug)
 
-        @mcp.tool(name="assign_task", description="Tasks \u00b7 mutation assignTask. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"assigneeId\":\"<ID HERE>\",\"taskId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="assign_task", description="Assign a task to a GreyMatter user. input: AssignTaskInput { taskId, assigneeId }. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"assigneeId\":\"<ID HERE>\",\"taskId\":\"<ID HERE>\"}}")
         async def assign_task(
             input: Annotated[Any, Field(description="GraphQL: AssignTaskInput!")],
             after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
@@ -146,7 +146,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["createTask"], {"input": input, "after": after, "filter": filter, "first": first, "order": order}, customer_slug=customer_slug)
 
-        @mcp.tool(name="resolve_task", description="Tasks \u00b7 mutation resolveTask. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"closeCode\":\"CANCELLED\",\"closeNote\":\"\",\"taskId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="resolve_task", description="Resolve a task. input: ResolveTaskInput { taskId, closeCode (CANCELLED, DUPLICATE, or RESOLVED), closeNote }. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"closeCode\":\"CANCELLED\",\"closeNote\":\"\",\"taskId\":\"<ID HERE>\"}}")
         async def resolve_task(
             input: Annotated[Any, Field(description="GraphQL: ResolveTaskInput!")],
             after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,

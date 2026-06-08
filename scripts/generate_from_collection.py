@@ -27,6 +27,27 @@ _SCALAR_ANNOT = {
     "Boolean": "bool",
 }
 
+# Richer descriptions for high-traffic SOC operations. Keyed by GraphQL operation
+# name. These override the auto-generated description text (parameters are
+# unaffected). Enum values below are from the GreyMatter API documentation.
+OVERRIDES: dict[str, str] = {
+    "incidents": "List security incidents with filtering (state, severity, updated time range) and ordering. Relay-paginated (edges/pageInfo/totalCount). Common states: PENDING_CUSTOMER, PENDING_RQ, RESOLVED, CANCELLED.",
+    "incident": "Fetch a single incident by id or ticket number, including comments, artifacts, metadata, rule, and assignee.",
+    "acknowledgeIncident": "Acknowledge an incident. input: IncidentAcknowledgementInput { incidentId, acknowledgementMethod (e.g. WEB_UI), autoAssign }.",
+    "assignIncident": "Assign an incident to a GreyMatter user. input: AssignIncidentInput { incidentId, assigneeId }. Resolve assigneeId via the customer/users query.",
+    "addIncidentComment": "Add a comment to an incident. input: IncidentCommentInput { incidentId, comment }.",
+    "closeIncident": "Resolve or cancel an incident. request: CloseIncidentRequest { incidentId, state (RESOLVED or CANCELLED), closeCode, closeNote }. Incident close codes: CUSTOMER_ANOMALOUS_SAFE, CUSTOMER_FALSE_POSITIVE, CUSTOMER_TRUE_POSITIVE, FALSE_POSITIVE_CREATE_TUNING_TICKET, CUSTOMER_SECURITY_CONTROL_TESTING, CUSTOMER_CANCELLED.",
+    "updateIncidentState": "Change an incident's state (e.g. send back to ReliaQuest). input: UpdateIncidentStateInput { incidentId, state (e.g. PENDING_RQ, PENDING_CUSTOMER), comment }.",
+    "tasks": "List tasks (non-security / engineering items) with filtering and ordering. Relay-paginated.",
+    "task": "Fetch a single task by id, including comments.",
+    "assignTask": "Assign a task to a GreyMatter user. input: AssignTaskInput { taskId, assigneeId }.",
+    "addTaskComment": "Add a comment to a task. input: TaskCommentInput { taskId, comment }.",
+    "resolveTask": "Resolve a task. input: ResolveTaskInput { taskId, closeCode (CANCELLED, DUPLICATE, or RESOLVED), closeNote }.",
+    "detectionRules": "List deployed detection rules across GreyMatter integrations (includes MITRE ATT&CK mapping where available).",
+    "runPlaybook": "Execute a predefined playbook (Respond capability) with the given inputs.",
+    "rateLimit": "Return current GreyMatter API rate-limit usage (limit is 5000 points/hour per company account).",
+}
+
 _OP_RE = re.compile(r"^\s*(query|mutation)\s+([A-Za-z0-9_]+)?\s*(\([^)]*\))?", re.DOTALL)
 
 
@@ -175,7 +196,8 @@ def _emit_tool(op: dict) -> str:
     name = tool_name(op["op_name"])
     decls = parse_variable_decls(op["sig"])
     example = _example_snippet(op["example"])
-    desc = f"{op['folder']} · {op['kind']} {op['op_name']}."
+    base = OVERRIDES.get(op["op_name"]) or f"{op['folder']} · {op['kind']} {op['op_name']}."
+    desc = base
     if decls:
         desc += " Variables: " + ", ".join(d[0] for d in decls) + "."
     if example:

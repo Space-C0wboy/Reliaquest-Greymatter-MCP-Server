@@ -41,7 +41,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
     ) -> Any:
         return await execute_operation(_DOC["healthIncidents"], {"after": after, "first": first, "incidentFilter": incidentFilter, "incidentOrder": incidentOrder}, customer_slug=customer_slug)
 
-    @mcp.tool(name="incident", description="Incidents \u00b7 query incident. Variables: after, filter, first, order, filter1, after1, filter2, first1, order1, after2, filter3, first2, order2, after3, filter4, first3, order3, after4, filter5, first4, order4, after5, first5, after6, first6, after7, filter6, first7, order5, after8, filter7, first8, order6, by. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"CREATED\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderByList\":[\"CREATED_AT\"]},\"filter1\":{\"fields\":[\"\"]},\"after1\":\"T18w\",\"filter2\":{\"customers\":[\"<ID HERE>\"],\"ids\":[\"<ID HERE>...")
+    @mcp.tool(name="incident", description="Fetch a single incident by id or ticket number, including comments, artifacts, metadata, rule, and assignee. Variables: after, filter, first, order, filter1, after1, filter2, first1, order1, after2, filter3, first2, order2, after3, filter4, first3, order3, after4, filter5, first4, order4, after5, first5, after6, first6, after7, filter6, first7, order5, after8, filter7, first8, order6, by. Example variables: {\"after\":\"T18w\",\"filter\":{\"created\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"types\":[\"CREATED\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderByList\":[\"CREATED_AT\"]},\"filter1\":{\"fields\":[\"\"]},\"after1\":\"T18w\",\"filter2\":{\"customers\":[\"<ID HERE>\"],\"ids\":[\"<ID HERE>...")
     async def incident(
         after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
         filter: Annotated[Any | None, Field(default=None, description="GraphQL: IncidentActivityLogFilter")] = None,
@@ -81,7 +81,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
     ) -> Any:
         return await execute_operation(_DOC["incident"], {"after": after, "filter": filter, "first": first, "order": order, "filter1": filter1, "after1": after1, "filter2": filter2, "first1": first1, "order1": order1, "after2": after2, "filter3": filter3, "first2": first2, "order2": order2, "after3": after3, "filter4": filter4, "first3": first3, "order3": order3, "after4": after4, "filter5": filter5, "first4": first4, "order4": order4, "after5": after5, "first5": first5, "after6": after6, "first6": first6, "after7": after7, "filter6": filter6, "first7": first7, "order5": order5, "after8": after8, "filter7": filter7, "first8": first8, "order6": order6, "by": by}, customer_slug=customer_slug)
 
-    @mcp.tool(name="incidents", description="Incidents \u00b7 query incidents. Variables: after, first, incidentFilter, incidentOrder. Example variables: {\"after\":\"T18w\",\"first\":10,\"incidentFilter\":{\"acknowledged\":true,\"assignees\":[\"<ID HERE>\"],\"closed\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"commentFilter\":{\"earliestCreate\":\"2026-05-01T00:00:00.000Z\",\"latestCreate\":\"2026-05-01T00:00:00.000Z\",\"types\":[\"PUBLIC\"]...")
+    @mcp.tool(name="incidents", description="List security incidents with filtering (state, severity, updated time range) and ordering. Relay-paginated (edges/pageInfo/totalCount). Common states: PENDING_CUSTOMER, PENDING_RQ, RESOLVED, CANCELLED. Variables: after, first, incidentFilter, incidentOrder. Example variables: {\"after\":\"T18w\",\"first\":10,\"incidentFilter\":{\"acknowledged\":true,\"assignees\":[\"<ID HERE>\"],\"closed\":{\"earliest\":\"2026-05-01T00:00:00.000Z\",\"latest\":\"2026-05-01T00:00:00.000Z\"},\"commentFilter\":{\"earliestCreate\":\"2026-05-01T00:00:00.000Z\",\"latestCreate\":\"2026-05-01T00:00:00.000Z\",\"types\":[\"PUBLIC\"]...")
     async def incidents(
         after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
         first: Annotated[int | None, Field(default=None, description="GraphQL: Int")] = None,
@@ -99,14 +99,14 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["acknowledgeAssignAndCloseIncident"], {"input": input}, customer_slug=customer_slug)
 
-        @mcp.tool(name="acknowledge_incident", description="Incidents \u00b7 mutation acknowledgeIncident. Variables: input. Example variables: {\"input\":{\"acknowledgementMethod\":\"WEB_UI\",\"autoAssign\":true,\"incidentId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="acknowledge_incident", description="Acknowledge an incident. input: IncidentAcknowledgementInput { incidentId, acknowledgementMethod (e.g. WEB_UI), autoAssign }. Variables: input. Example variables: {\"input\":{\"acknowledgementMethod\":\"WEB_UI\",\"autoAssign\":true,\"incidentId\":\"<ID HERE>\"}}")
         async def acknowledge_incident(
             input: Annotated[Any, Field(description="GraphQL: IncidentAcknowledgementInput!")],
             customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
         ) -> Any:
             return await execute_operation(_DOC["acknowledgeIncident"], {"input": input}, customer_slug=customer_slug)
 
-        @mcp.tool(name="add_incident_comment", description="Incidents \u00b7 mutation addIncidentComment. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"earliestCreate\":\"2026-05-01T00:00:00.000Z\",\"latestCreate\":\"2026-05-01T00:00:00.000Z\",\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"comment\":\"\",\"incidentId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="add_incident_comment", description="Add a comment to an incident. input: IncidentCommentInput { incidentId, comment }. Variables: after, filter, first, order, input. Example variables: {\"after\":\"T18w\",\"filter\":{\"earliestCreate\":\"2026-05-01T00:00:00.000Z\",\"latestCreate\":\"2026-05-01T00:00:00.000Z\",\"types\":[\"PUBLIC\"]},\"first\":10,\"order\":{\"direction\":\"ASC\",\"orderBy\":\"CREATED_AT\"},\"input\":{\"comment\":\"\",\"incidentId\":\"<ID HERE>\"}}")
         async def add_incident_comment(
             input: Annotated[Any, Field(description="GraphQL: IncidentCommentInput!")],
             after: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
@@ -117,7 +117,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["addIncidentComment"], {"input": input, "after": after, "filter": filter, "first": first, "order": order}, customer_slug=customer_slug)
 
-        @mcp.tool(name="assign_incident", description="Incidents \u00b7 mutation assignIncident. Variables: input. Example variables: {\"input\":{\"assigneeId\":\"<ID HERE>\",\"incidentId\":\"<ID HERE>\"}}")
+        @mcp.tool(name="assign_incident", description="Assign an incident to a GreyMatter user. input: AssignIncidentInput { incidentId, assigneeId }. Resolve assigneeId via the customer/users query. Variables: input. Example variables: {\"input\":{\"assigneeId\":\"<ID HERE>\",\"incidentId\":\"<ID HERE>\"}}")
         async def assign_incident(
             input: Annotated[Any, Field(description="GraphQL: AssignIncidentInput!")],
             customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
@@ -131,7 +131,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["bulkCloseIncidents"], {"input": input}, customer_slug=customer_slug)
 
-        @mcp.tool(name="close_incident", description="Incidents \u00b7 mutation closeIncident. Variables: request. Example variables: {\"request\":{\"closeCode\":\"CUSTOMER_ANOMALOUS_SAFE\",\"closeNote\":\"\",\"incidentId\":\"<ID HERE>\",\"state\":\"RESOLVED\"}}")
+        @mcp.tool(name="close_incident", description="Resolve or cancel an incident. request: CloseIncidentRequest { incidentId, state (RESOLVED or CANCELLED), closeCode, closeNote }. Incident close codes: CUSTOMER_ANOMALOUS_SAFE, CUSTOMER_FALSE_POSITIVE, CUSTOMER_TRUE_POSITIVE, FALSE_POSITIVE_CREATE_TUNING_TICKET, CUSTOMER_SECURITY_CONTROL_TESTING, CUSTOMER_CANCELLED. Variables: request. Example variables: {\"request\":{\"closeCode\":\"CUSTOMER_ANOMALOUS_SAFE\",\"closeNote\":\"\",\"incidentId\":\"<ID HERE>\",\"state\":\"RESOLVED\"}}")
         async def close_incident(
             request: Annotated[Any | None, Field(default=None, description="GraphQL: CloseIncidentRequest")] = None,
             customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
@@ -186,7 +186,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         ) -> Any:
             return await execute_operation(_DOC["unresolveIncident"], {"input": input, "filter": filter, "after": after, "filter1": filter1, "first": first, "order": order, "after1": after1, "filter2": filter2, "first1": first1, "order1": order1}, customer_slug=customer_slug)
 
-        @mcp.tool(name="update_incident_state", description="Incidents \u00b7 mutation updateIncidentState. Variables: input. Example variables: {\"input\":{\"comment\":\"\",\"incidentId\":\"<ID HERE>\",\"state\":\"PENDING_CUSTOMER\"}}")
+        @mcp.tool(name="update_incident_state", description="Change an incident's state (e.g. send back to ReliaQuest). input: UpdateIncidentStateInput { incidentId, state (e.g. PENDING_RQ, PENDING_CUSTOMER), comment }. Variables: input. Example variables: {\"input\":{\"comment\":\"\",\"incidentId\":\"<ID HERE>\",\"state\":\"PENDING_CUSTOMER\"}}")
         async def update_incident_state(
             input: Annotated[Any, Field(description="GraphQL: UpdateIncidentStateInput!")],
             customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
