@@ -63,7 +63,6 @@ class GreyMatterClient:
         async with self._connect_lock:
             if self._client is None:
                 self._client = httpx.AsyncClient(
-                    base_url="",
                     timeout=self._config.timeout,
                     headers={
                         "X-API-KEY": self._config.api_key,
