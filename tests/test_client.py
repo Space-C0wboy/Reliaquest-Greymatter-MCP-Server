@@ -66,3 +66,24 @@ async def test_retries_on_503_then_succeeds(httpx_mock):
     assert out == {"ok": True}
     assert len(httpx_mock.get_requests()) == 2
     await client.close()
+
+
+async def test_retries_on_network_error_then_succeeds(httpx_mock):
+    import httpx
+    httpx_mock.add_exception(httpx.ConnectError("boom"))
+    httpx_mock.add_response(json={"data": {"ok": True}})
+    client = GreyMatterClient(_cfg())
+    out = await client.execute("query { ok }")
+    assert out == {"ok": True}
+    assert len(httpx_mock.get_requests()) == 2
+    await client.close()
+
+
+async def test_graphql_error_joins_multiple_messages(httpx_mock):
+    httpx_mock.add_response(json={"errors": [{"message": "first"}, {"message": "second"}], "data": None})
+    client = GreyMatterClient(_cfg())
+    with pytest.raises(GreyMatterGraphQLError) as ei:
+        await client.execute("query { x }")
+    msg = str(ei.value)
+    assert "first" in msg and "second" in msg
+    await client.close()
