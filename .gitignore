@@ -16,12 +16,16 @@ venv/
 *.env
 !.env.example
 
-# Introspection output (regenerate with scripts/introspect.py)
-schema/schema.json
-
-# ReliaQuest proprietary reference material — kept local for code generation,
-# NOT redistributed in this public/community repo (© ReliaQuest, LLC).
+# ReliaQuest proprietary reference material — kept local for code generation and
+# verification, NOT redistributed in this public/community repo (© ReliaQuest, LLC).
+# This includes the exported API collection and the introspected GraphQL schema
+# (regenerate the schema with scripts/introspect.py).
 Development Reference/
+schema/
+
+# Internal development process docs (design spec, implementation plan). Kept local;
+# not needed by end users or contributors to build/use/contribute to the server.
+docs/superpowers/
 
 # Node (temporary tooling only)
 node_modules/
