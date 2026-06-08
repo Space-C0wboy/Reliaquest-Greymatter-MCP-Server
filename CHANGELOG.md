@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1] - 2026-06-08
+### Fixed
+- Coerce JSON-string object/array arguments back into real objects before sending
+  to GraphQL. MCP clients may serialize complex tool arguments (filters, orders,
+  input objects) as JSON strings, which the API rejected with
+  *"Expected type 'Map' but was 'String'"*. Affected all tools taking input-object
+  or list variables (e.g. `incidents` with `incidentFilter`/`incidentOrder`).
+
 ## [0.1.0] - 2026-06-08
 ### Added
 - Initial release of the ReliaQuest GreyMatter MCP server.
