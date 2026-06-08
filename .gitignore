@@ -23,9 +23,11 @@ venv/
 Development Reference/
 schema/
 
-# Internal development process docs (design spec, implementation plan). Kept local;
-# not needed by end users or contributors to build/use/contribute to the server.
+# Internal development process docs (design spec, implementation plan, testing
+# backlog). Kept local; not needed by end users or contributors to build/use/
+# contribute to the server.
 docs/superpowers/
+docs/internal/
 
 # Node (temporary tooling only)
 node_modules/
