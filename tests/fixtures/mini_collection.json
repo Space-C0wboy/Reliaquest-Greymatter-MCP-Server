@@ -1,0 +1,46 @@
+{
+  "info": { "name": "Mini GreyMatter" },
+  "item": [
+    {
+      "name": "Incidents",
+      "item": [
+        {
+          "name": "Queries",
+          "item": [
+            {
+              "name": "incidents",
+              "request": {
+                "method": "POST",
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "query incidents ($after: String, $first: Int, $incidentFilter: IncidentFilter) {\n incidents (after: $after, first: $first, incidentFilter: $incidentFilter) {\n totalCount\n }\n}",
+                    "variables": "{\n \"first\": 10\n}"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mutations",
+          "item": [
+            {
+              "name": "acknowledgeIncident",
+              "request": {
+                "method": "POST",
+                "body": {
+                  "mode": "graphql",
+                  "graphql": {
+                    "query": "mutation acknowledgeIncident ($input: IncidentAcknowledgementInput!) {\n acknowledgeIncident (input: $input) {\n success\n }\n}",
+                    "variables": "{\n \"input\": {\n \"incidentId\": \"x\"\n }\n}"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
