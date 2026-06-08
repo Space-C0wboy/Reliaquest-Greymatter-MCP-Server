@@ -54,6 +54,19 @@ Both can return `"An unexpected error has occurred"` at the root path
 (`["greymatterFields"]` / `["drpAlert"]`). Likely entitlement-dependent; noted for
 completeness.
 
+## 4. Single-item getters denied while list queries succeed (GitHub issue #4)
+
+Several single-entity-by-id getters return `"You don't have access to this item"` even
+though the corresponding **list** query works and the key is **Admin** (and mutations on
+the same entity succeed). Observed for: `incident`, `task`, `playbookRun`,
+`emergencyContact`. Single getters that worked: `user`, `node`, `integration`, `indicator`,
+`accessGroup`, `pod`, `role`, `customerDetectionActivityLogEntry`.
+
+- **Expected:** if list + mutation access is granted, single-item fetch-by-id should be too
+  — or the required scope/permission for single fetch should be documented.
+- This is an API authorization behavior, not a client issue (the server returns a clean
+  GraphQL error). No server change unless ReliaQuest confirms a workaround.
+
 ---
 
 ## Notes (not bugs — documented for our maintainers)
