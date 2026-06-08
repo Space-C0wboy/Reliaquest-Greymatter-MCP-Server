@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.1.4] - 2026-06-08
+### Removed
+- Removed `docs/reliaquest-api-issues.md` and the server-side-issue notes from the README
+  "Known limitations" section (and the dangling references to the file).
+
 ## [0.1.3] - 2026-06-08
 ### Changed
 - Extensive teaching-style code documentation across the codebase (module/function
