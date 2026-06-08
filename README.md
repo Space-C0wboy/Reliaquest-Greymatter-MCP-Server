@@ -141,6 +141,37 @@ The GreyMatter API enforces a limit of **5000 points/hour per company account**.
 node entity returned counts as **1 point**, so large paginated queries consume points
 quickly. Use the **`rate_limit`** tool to check your current usage.
 
+## Known limitations
+
+The tools mirror the vendor's Postman collection verbatim. A few operations are
+affected by **server-side issues in the GreyMatter API itself** (not by this server),
+observed during live testing. They are documented here and have been reported to
+ReliaQuest:
+
+- **`cases`** — the query fails with *"An unexpected error has occurred"* at
+  `node.discoverExposure`. The GreyMatter resolver errors on that field (rather than
+  returning null) for accounts not entitled to the Discover/exposure capability, which
+  fails the whole query. **Workaround:** use `graphql_query` with a `cases` document
+  that omits the `discoverExposure { … }` selection.
+- **`playbooks`** — the query fails to serialize its own enum:
+  *Invalid input for enum `TechnologyType`. Unknown value `MOBILE_DEVICE_MANAGEMENT`*
+  under `supportedTechnologies.type`. **Workaround:** use `graphql_query` with a
+  `playbooks` document that omits the `supportedTechnologies { … }` selection.
+- **`greymatter_fields`** and the single-item **`drp_alert`** can return
+  *"An unexpected error has occurred"* depending on account entitlement.
+
+**Entitlement-gated tools.** Some tools return *"You don't have access to this item"*
+unless your account/API key is licensed for the relevant module — e.g. `drp_alerts`,
+`access_control_policies`, `access_control_resources`, `discover_tasks`, `audits`.
+These work normally for entitled accounts.
+
+**Multi-connection queries.** A few queries page several nested connections and expose
+multiple `first` / `after` parameters (e.g. `cases` uses `first3`/`after3` for the
+top-level list and `first`/`first1`/`first2` for nested connections). Always set the
+**outer** page-size parameter to bound results; leaving it unset can return very large
+responses and time out. For heavy queries (e.g. `playbook_run_filter_data`), raise
+`GREYMATTER_TIMEOUT`.
+
 ## How tools are generated
 
 The tools are generated from the vendor's Postman collection:
