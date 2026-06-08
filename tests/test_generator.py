@@ -138,6 +138,42 @@ def test_strip_field_selection_whole_identifier_only():
     assert "discoverExposureSummary" in out
 
 
+def test_prune_unused_variables_removes_orphans():
+    gen = _load_generator()
+    q = "query x ($a: String, $b: Int) { thing(first: $a) { id } }"  # $b unused
+    out = gen._prune_unused_variables(q)
+    assert "$b" not in out
+    assert "$a: String" in out
+
+
+def test_prune_unused_variables_drops_empty_signature():
+    gen = _load_generator()
+    q = "query x ($a: String) { thing { id } }"  # $a unused -> signature emptied
+    out = gen._prune_unused_variables(q)
+    assert "$a" not in out
+    assert gen.parse_variable_decls(gen.parse_operation(out)[2]) == []
+
+
+def test_prune_keeps_all_when_all_used():
+    gen = _load_generator()
+    q = "query x ($a: String) { thing(first: $a) { id } }"
+    assert gen._prune_unused_variables(q) == q
+
+
+def test_set_mutation_selection_replaces_block():
+    gen = _load_generator()
+    q = "mutation retainIncident ($id: ID!) { retainIncident(id: $id) { incident { allArtifacts { field } id } success } }"
+    out = gen._set_mutation_selection(q, "retainIncident", "{ incident { id retained } success }")
+    assert "allArtifacts" not in out
+    assert "{ incident { id retained } success }" in out
+    # operation name occurrence (first) must be untouched as a name
+    assert out.startswith("mutation retainIncident (")
+    # the root FIELD invocation (with its args) must survive — only its selection set
+    # is replaced, so $id stays referenced and the doc remains valid GraphQL
+    assert "retainIncident(id: $id) { incident { id retained } success }" in out
+    assert "$id" in out
+
+
 def test_emitted_code_safe_with_special_chars(tmp_path):
     """Folder names / examples with quotes, backslashes, newlines must not break emitted code."""
     gen = _load_generator()
