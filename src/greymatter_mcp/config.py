@@ -49,7 +49,7 @@ class Config:
         read_only = os.getenv("GREYMATTER_READ_ONLY", "false").strip().lower() in _TRUTHY
 
         try:
-            timeout = float(os.getenv("GREYMATTER_TIMEOUT", "30"))
+            timeout = float(os.getenv("GREYMATTER_TIMEOUT", "60"))
         except ValueError as e:
             raise ConfigError(f"GREYMATTER_TIMEOUT must be a number: {e}") from e
 

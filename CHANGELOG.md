@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.2] - 2026-06-08
+### Fixed
+- Generator now prunes orphaned GraphQL variable declarations after a field/selection is
+  stripped, fixing an `UnusedVariable` validation error that broke the `case` tool (#3).
+### Changed
+- Trim heavy mutation response selection sets (`retain_incident`, `release_incident`,
+  `unresolve_incident`, `update_task_retained_status`) to a minimal confirmation to reduce
+  payload and client-timeout risk (#1).
+- Raise the default `GREYMATTER_TIMEOUT` from 30s to 60s — some mutations are slow
+  server-side; the old default caused a wasteful retry before succeeding (#1).
+- `create_case` tool description now notes that `state` is effectively required (the API
+  returns `success=false` with no error if omitted) (#2).
+### Notes
+- Documented the single-item-getter "access denied" vendor behavior in
+  `docs/reliaquest-api-issues.md` (#4).
+
 ## [0.1.1] - 2026-06-08
 ### Fixed
 - Coerce JSON-string object/array arguments back into real objects before sending
