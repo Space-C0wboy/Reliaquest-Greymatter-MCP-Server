@@ -1,0 +1,4821 @@
+OBJECT AccessControlPoliciesResponse {
+  success
+  policies
+}
+
+OBJECT AccessControlPolicy {
+  id
+  name
+  description
+  customer
+  resource
+  resourceType
+  users
+  accessGroups
+  displayName
+}
+
+OBJECT AccessControlPolicyConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT AccessControlPolicyEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT AccessControlPolicyFieldFilter {
+  ids
+}
+
+INPUT_OBJECT AccessControlPolicyFilter {
+  name
+  resources
+}
+
+INPUT_OBJECT AccessControlPolicyOrder {
+  orderBy
+  direction
+}
+
+ENUM AccessControlPolicyOrderBy { NAME, RESOURCE }
+
+OBJECT AccessControlPolicyResponse {
+  success
+  policy
+}
+
+OBJECT AccessGroup {
+  id
+  name
+  description
+  isDefault
+  users
+  roles
+  pods
+  ssoGroups
+  createdAt
+  updatedAt
+}
+
+OBJECT AccessGroupConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT AccessGroupEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT AccessGroupFilter {
+  name
+  ids
+  users
+  pods
+  roles
+  customers
+}
+
+INPUT_OBJECT AccessGroupOrder {
+  orderBy
+  direction
+}
+
+ENUM AccessGroupOrderBy { NAME }
+
+INPUT_OBJECT AcknowledgeAssignAndCloseIncidentInput {
+  incidentId
+  assigneeId
+  closeCode
+  closeNote
+  state
+  acknowledgementMethod
+  type
+}
+
+INPUT_OBJECT AcknowledgeTaskInput {
+  taskId
+  actionMethod
+}
+
+OBJECT ActionFieldDefinition {
+  field
+  required
+  deprecated
+}
+
+OBJECT ActionFieldRecommendation {
+  field
+  required
+  values
+}
+
+INPUT_OBJECT AddChildrenToCaseInput {
+  caseId
+  children
+}
+
+OBJECT AddDrpAlertCommentResponse {
+  success
+  comment
+}
+
+ENUM AggregationType { NONE, COUNT, SUM, AVERAGE, MIN, MAX, BUCKET, ARRAY_AGG, HISTOGRAM, DISTINCT_COUNT, PERCENTILE, STDDEV, VARIANCE }
+
+OBJECT ApiKey {
+  id
+  key
+  createdAt
+  expiresAt
+  lastUsedAt
+  lastQuery
+  user
+}
+
+ENUM ApprovalState { PENDING, CLARIFICATION, ACCEPTED, REJECTED, UNRECOGNIZED }
+
+OBJECT Artifact {
+  field
+  values
+}
+
+INPUT_OBJECT ArtifactFilter {
+  fields
+}
+
+INPUT_OBJECT ArtifactInput {
+  field
+  values
+}
+
+OBJECT Asset {
+  techAssetIds
+  id
+  name
+  type
+  technology
+  operatingSystem
+  ipAddress
+  siem
+  edr
+  iam
+  vulnerabilityScanner
+  cloud
+  publiclyAccessible
+  externalScanDetailsAvailable
+}
+
+ENUM AssetAccessibility { ALL, NOT_PUBLIC, PUBLIC, EXTERNAL_SCAN_DETAILS_AVAILABLE }
+
+OBJECT AssetConnection {
+  edges
+  pageInfo
+  totalCount
+}
+
+INPUT_OBJECT AssetDiscoverInsightFilter {
+  edrCoverage
+  logging
+  vulnerabilityScanner
+  domainJoined
+  attentionRequired
+}
+
+OBJECT AssetEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT AssetEventFilter {
+  assetName
+  eventCodes
+  storageIntegrations
+  classes
+  activities
+  subActivities
+  groupBy
+}
+
+INPUT_OBJECT AssetFilter {
+  assetTypes
+  siem
+  edr
+  iam
+  vulnerabilityScanner
+  cloud
+  discoverTechnologies
+  vulnerabilities
+  operatingSystems
+  tags
+  technologies
+  storageIdentifiers
+  vendorProductFeatures
+  insights
+  eventFilter
+  searchText
+  assetAccessibility
+}
+
+INPUT_OBJECT AssetOrder {
+  orderBy
+  direction
+}
+
+ENUM AssetOrderBy { NAME, IP_ADDRESS, LAST_SEEN, VULNERABILITIES, CRITICALITY, ENTITY_TYPE, SOURCE, STATUS }
+
+OBJECT AssetTechVisibility {
+  name
+  visibility
+}
+
+INPUT_OBJECT AssetTechVisibilityFilter {
+  name
+  visibility
+}
+
+INPUT_OBJECT AssetVendorProductFeaturesFilter {
+  vendor
+  product
+  feature
+}
+
+ENUM AssetVisibility { LOGGING, NOT_LOGGING, NOT_DISCOVERED }
+
+INPUT_OBJECT AssignDiscoverTaskInput {
+  discoverTaskId
+  assignee
+}
+
+INPUT_OBJECT AssignIncidentInput {
+  incidentId
+  assigneeId
+}
+
+INPUT_OBJECT AssignTaskInput {
+  taskId
+  assigneeId
+}
+
+OBJECT AuditActionDetails {
+  id
+  actionType
+  user
+  customer
+  objectId
+  objectType
+  objectName
+  asset
+  createdAt
+}
+
+OBJECT AuditActionDetailsConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT AuditActionDetailsEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT AuditActionFilter {
+  objectId
+}
+
+INPUT_OBJECT AuditActionOrder {
+  orderBy
+  direction
+}
+
+ENUM AuditActionOrderBy { ACTION_TYPE, ENTITY_TYPE, ASSET, CREATED_AT }
+
+OBJECT AuditAsset {
+  name
+  oldValue
+  newValue
+}
+
+INTERFACE BaseUser {
+  id
+  fullName
+  email
+  serviceNowId
+  accessGroups
+  pods
+  roles
+}
+
+
+INPUT_OBJECT BulkCloseDrpAlertsInput {
+  drpAlertIds
+  comment
+}
+
+INPUT_OBJECT BulkCloseIncidentsInput {
+  incidentIds
+  closeCode
+  closeNote
+  state
+  aiChatId
+}
+
+OBJECT BulkIncidentResponse {
+  success
+  incidents
+}
+
+OBJECT BulkNewCustomerDetectionDeployedActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  bulkJob
+  activityLogEntries
+}
+
+INPUT_OBJECT BulkResolveTasksInput {
+  taskIds
+  closeNote
+  closeCode
+}
+
+OBJECT BulkTaskResponse {
+  success
+  tasks
+}
+
+INPUT_OBJECT BulkUpdateDrpAlertStateInput {
+  filter
+  state
+  comment
+}
+
+ENUM CallCategory { ENGINEERING, SECURITY, INTEL_ADVISORIES }
+
+OBJECT CallWindow {
+  daysOfWeek
+  startTime
+  endTime
+  timeZone
+}
+
+INPUT_OBJECT CancelCaseInput {
+  caseId
+  reason
+  closeCode
+}
+
+OBJECT Case {
+  id
+  customer
+  slug
+  title
+  description
+  aiSummary
+  lastSummarizedAt
+  type
+  subType
+  state
+  severity
+  owner
+  createdBy
+  updatedBy
+  dueAt
+  closedAt
+  createdAt
+  updatedAt
+  reasonForClosure
+  closeCode
+  expirationDate
+  discoverExposure
+  childrenOverview
+  children
+  activity
+  comments
+}
+
+OBJECT CaseActivityLogConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CaseActivityLogEdge {
+  cursor
+  node
+}
+
+OBJECT CaseActivityLogEntry {
+  id
+  createdAt
+  createdBy
+  title
+  description
+  aiSummary
+  owner
+  state
+  severity
+  dueAt
+  closedAt
+  reasonForClosure
+  closeCode
+  expirationDate
+  caseChild
+}
+
+INPUT_OBJECT CaseActivityLogFilter {
+  created
+}
+
+INPUT_OBJECT CaseActivityLogOrder {
+  orderByList
+  direction
+}
+
+ENUM CaseActivityLogOrderBy { CREATED_AT, FIELD }
+
+INPUT_OBJECT CaseBy {
+  id
+  slug
+}
+
+OBJECT CaseChild {
+  id
+  customer
+  type
+  externalId
+  title
+  summary
+  severity
+  state
+  closeCode
+  assignee
+  createdAt
+  updatedAt
+}
+
+INPUT_OBJECT CaseChildAssociationInput {
+  childType
+  childId
+}
+
+OBJECT CaseChildChanged {
+  oldValue
+  newValue
+}
+
+OBJECT CaseChildConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CaseChildEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CaseChildFilter {
+  assignees
+  unassigned
+  severities
+  states
+  types
+  created
+  updated
+  search
+}
+
+INPUT_OBJECT CaseChildOrder {
+  orderBy
+  direction
+}
+
+ENUM CaseChildOrderBy { STATE, SEVERITY, TYPE, CLOSE_CODE, CREATED_AT, UPDATED_AT }
+
+ENUM CaseChildSeverity { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL }
+
+ENUM CaseChildState { NEW, IN_PROGRESS, CLOSED }
+
+ENUM CaseChildType { INCIDENT, ENGINEERING_INCIDENT, PHISHING_INCIDENT, DRP_ALERT, TASK, DISCOVER_TASK }
+
+OBJECT CaseChildrenCountByCloseCode {
+  closeCode
+  total
+}
+
+OBJECT CaseChildrenOverview {
+  totalChildren
+  totalOpen
+  totalNew
+  totalInProgress
+  totalClosed
+  totalsByCloseCode
+}
+
+OBJECT CaseComment {
+  id
+  text
+  createdAt
+  updatedAt
+  createdBy
+  updatedBy
+}
+
+OBJECT CaseCommentConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CaseCommentEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CaseCommentFilter {
+  created
+}
+
+INPUT_OBJECT CaseCommentInput {
+  caseId
+  comment
+}
+
+INPUT_OBJECT CaseCommentOrder {
+  orderBy
+  direction
+}
+
+ENUM CaseCommentOrderBy { CREATED_AT, UPDATED_AT }
+
+OBJECT CaseConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CaseEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CaseFilter {
+  owners
+  unowned
+  severities
+  states
+  types
+  subTypes
+  created
+  updated
+  closed
+  due
+  search
+}
+
+INPUT_OBJECT CaseOrder {
+  orderBy
+  direction
+}
+
+ENUM CaseOrderBy { CREATED_AT, UPDATED_AT, TITLE, TYPE, SEVERITY, STATE, CLOSED_AT, DUE_AT }
+
+OBJECT CaseResponse {
+  success
+  case
+}
+
+ENUM CaseSeverity { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL }
+
+OBJECT CaseSeverityChanged {
+  oldValue
+  newValue
+}
+
+ENUM CaseState { NEW, IN_PROGRESS, ON_HOLD, CLOSED, CANCELLED }
+
+OBJECT CaseStateChanged {
+  oldValue
+  newValue
+}
+
+ENUM CaseSubType { MISCONFIGURATION, VULNERABILITY, THREAT_ADVISORY, COVERAGE_GAP }
+
+ENUM CaseType { GENERAL, DISCOVER_EXPOSURE, TEAMMATE }
+
+ENUM ChatFileType { VIDEO, IMAGE, OTHER, UNKNOWN_DEFAULT_OPEN_API }
+
+ENUM ClosableIncidentState { CLOSED, RESOLVED }
+
+INPUT_OBJECT CloseCaseInput {
+  caseId
+  reason
+  closeCode
+}
+
+INPUT_OBJECT CloseDiscoverTaskInput {
+  discoverTaskId
+  closeCode
+}
+
+INPUT_OBJECT CloseIncidentRequest {
+  incidentId
+  closeCode
+  closeNote
+  state
+}
+
+INTERFACE Connection {
+  totalCount
+  edges
+  pageInfo
+}
+
+ENUM ConnectionStatus { CONNECTED, DISCONNECTED, NOT_AVAILABLE }
+
+OBJECT Connector {
+  id
+  name
+  type
+  documentationUrl
+}
+
+OBJECT CostEstimationResponse {
+  cost
+}
+
+INPUT_OBJECT CreateAccessControlPolicyInput {
+  name
+  description
+  resource
+  accessGroups
+  users
+}
+
+INPUT_OBJECT CreateAccessGroupInput {
+  name
+  description
+  ssoGroups
+  isDefault
+  users
+  pods
+  roles
+}
+
+OBJECT CreateAccessGroupResponse {
+  success
+  accessGroup
+}
+
+INPUT_OBJECT CreateActivityLogEntryCommentInput {
+  activityLogEntryId
+  text
+}
+
+OBJECT CreateActivityLogEntryCommentResponse {
+  success
+  comment
+}
+
+INPUT_OBJECT CreateApiKeyInput {
+  expiryTime
+  user
+}
+
+OBJECT CreateApiKeyResponse {
+  success
+  apiKey
+}
+
+INPUT_OBJECT CreateCallWindowInput {
+  daysOfWeek
+  startTime
+  endTime
+  timeZone
+}
+
+INPUT_OBJECT CreateCaseInput {
+  title
+  description
+  aiSummary
+  type
+  subType
+  state
+  severity
+  owner
+  dueAt
+  attachmentIds
+  children
+}
+
+INPUT_OBJECT CreateEmergencyContactInput {
+  userId
+  fullName
+  phoneNumber
+  callAttempts
+  callCategories
+  callOrder
+  callWindows
+}
+
+OBJECT CreateEmergencyContactResponse {
+  emergencyContact
+  success
+}
+
+INPUT_OBJECT CreatePodInput {
+  name
+  description
+}
+
+OBJECT CreatePodResponse {
+  success
+  pod
+}
+
+INPUT_OBJECT CreateReferenceListColumnInput {
+  referenceList
+  name
+  description
+  type
+  linkedFields
+}
+
+INPUT_OBJECT CreateReferenceListInput {
+  name
+  description
+  queryReference
+  dataTagging
+}
+
+INPUT_OBJECT CreateReferenceListRowInput {
+  referenceList
+  values
+}
+
+INPUT_OBJECT CreateRoleInput {
+  name
+  description
+}
+
+OBJECT CreateRoleResponse {
+  success
+  role
+}
+
+INPUT_OBJECT CreateTaskInput {
+  taskType
+  metadata
+  title
+  description
+  priority
+  assignee
+}
+
+INPUT_OBJECT CreateUserInput {
+  fullName
+  email
+  jobTitle
+  hasAccessUntil
+  type
+}
+
+OBJECT CreatedTaskActivityLogEntry {
+  id
+  customer
+  task
+  type
+  createdAt
+  createdBy
+}
+
+OBJECT CurrentUser {
+  id
+  fullName
+  email
+  serviceNowId
+  customers
+  accessGroups
+  pods
+  roles
+  jobTitle
+}
+
+OBJECT Customer {
+  id
+  name
+  slug
+  residency
+  active
+  headerSlug
+  users
+  accessControlPolicies
+}
+
+OBJECT CustomerConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CustomerDetection {
+  id
+  displaySlug
+  deployedLogic
+  versionNumber
+  createdAt
+  enabled
+  sourceType
+  detectionSource
+  integration
+  globalDetection
+  draftVersion
+  customer
+  activityLogEntries
+}
+
+INTERFACE CustomerDetectionActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+}
+
+OBJECT CustomerDetectionActivityLogEntryComment {
+  id
+  customer
+  activityLogEntry
+  createdBy
+  text
+  type
+  createdAt
+}
+
+OBJECT CustomerDetectionActivityLogEntryCommentConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CustomerDetectionActivityLogEntryCommentEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CustomerDetectionActivityLogEntryCommentFilter {
+  types
+  user
+}
+
+INPUT_OBJECT CustomerDetectionActivityLogEntryCommentOrder {
+  orderBy
+  direction
+}
+
+ENUM CustomerDetectionActivityLogEntryCommentOrderBy { CREATED_AT }
+
+ENUM CustomerDetectionActivityLogEntryCommentType { PUBLIC }
+
+OBJECT CustomerDetectionActivityLogEntryConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CustomerDetectionActivityLogEntryEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CustomerDetectionActivityLogFilter {
+  activityLogTypes
+  customerDetectionId
+  draftCustomerDetectionId
+  bulkJobId
+  isBulk
+}
+
+INPUT_OBJECT CustomerDetectionActivityLogOrder {
+  orderBy
+  direction
+}
+
+ENUM CustomerDetectionActivityLogOrderBy { CREATED_AT }
+
+ENUM CustomerDetectionActivityLogType { RULE_ENABLE_REQUEST, RULE_DISABLE_REQUEST, NEW_RULE_REQUEST, TUNING_UPDATE_REQUEST, REQUEST_APPROVED, REQUEST_REJECTED, RULE_ENABLED, RULE_DISABLED, NEW_RULE_DEPLOYED, BULK_NEW_RULES_DEPLOYED, TUNING_UPDATED, RULES_MIGRATED_DETECT_PUSH, RULES_MIGRATED_DETECT_QUERY }
+
+OBJECT CustomerDetectionConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT CustomerDetectionDisableRequestActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+}
+
+OBJECT CustomerDetectionDisabledActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+}
+
+OBJECT CustomerDetectionEdge {
+  cursor
+  node
+}
+
+OBJECT CustomerDetectionEnableRequestActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+}
+
+OBJECT CustomerDetectionEnabledActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+}
+
+INPUT_OBJECT CustomerDetectionFilter {
+  detectionRuleIds
+  displaySlugs
+  sourceTypes
+  ineligible
+  enabled
+  integrationIds
+  createdAt
+}
+
+INPUT_OBJECT CustomerDetectionOrder {
+  orderBy
+  direction
+}
+
+ENUM CustomerDetectionOrderBy { CREATED_AT, DISPLAY_SLUG, UPDATED_AT }
+
+OBJECT CustomerDetectionRequestApprovedActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  requestType
+  bulkJobOpt
+}
+
+OBJECT CustomerDetectionRequestRejectedActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  requestType
+  tuningTicket
+  bulkJobOpt
+}
+
+OBJECT CustomerDetectionTestingResults {
+  id
+}
+
+OBJECT CustomerDetectionTuningUpdatedActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+  oldDeployedLogic
+  newDeployedLogic
+  oldTestingStatus
+  oldTestingDate
+  oldTestSearchWindow
+  oldTestAlertsVolume
+  newTestingStatus
+  newTestingDate
+  newTestSearchWindow
+  newTestAlertsVolume
+}
+
+OBJECT CustomerDetectionTuningUpdatedRequestActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  isEmergency
+  oldDeployedLogic
+  newDeployedLogic
+  oldTestingStatus
+  oldTestingDate
+  oldTestSearchWindow
+  oldTestAlertsVolume
+  newTestingStatus
+  newTestingDate
+  newTestSearchWindow
+  newTestAlertsVolume
+}
+
+OBJECT CustomerDetectionsMigratedDetectPushActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  detectionMigrationJobs
+}
+
+OBJECT CustomerDetectionsMigratedDetectQueryActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  detectionMigrationJobs
+}
+
+OBJECT CustomerEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT CustomerFilter {
+  name
+  ids
+  accessGroups
+  users
+  pods
+  roles
+}
+
+INPUT_OBJECT CustomerOrder {
+  orderBy
+  direction
+}
+
+ENUM CustomerOrderBy { NAME }
+
+OBJECT CustomerPlaybook {
+  id
+  action
+  fieldDefinitions
+  supportedIntegrations
+  metadata
+  rqAllowedToRun
+  note
+}
+
+OBJECT CustomerPlaybookResponse {
+  success
+  customerPlaybook
+}
+
+OBJECT DRPAccessControl {
+  assembleDocument
+  modifiable
+  printable
+  degradedPrintable
+  contentExtractable
+  accessibilityExtractable
+  formEnabled
+  annotationModifiable
+}
+
+OBJECT DRPActivityLogItem {
+  actor
+  clientId
+  actionKey
+  scope
+  payload
+  created
+  permissions
+}
+
+
+OBJECT DRPAlert {
+  id
+  shortCode
+  originator
+  alertFingerprint
+  customer
+  riskType
+  severity
+  sourceRef
+  title
+  subTitle
+  active
+  classification
+  domain
+  hosts
+  uri
+  currentState
+  currentAssignment
+  currentFlag
+  currentWatcher
+  thumbnailUri
+  closedSource
+  migrated
+  sourceUris
+  sourceGroup
+  riskFactorKeys
+  rejectedByRuleIds
+  takedown
+  assetMatches
+  activityLogItems
+  createdAt
+  updatedAt
+  sourceUpdated
+  removedAt
+}
+
+OBJECT DRPAlertAssignment {
+  version
+  user
+  comment
+  timestamp
+}
+
+INPUT_OBJECT DRPAlertAssignmentInput {
+  assignee
+  comment
+  shortCode
+}
+
+OBJECT DRPAlertAssignmentResponse {
+  success
+  unsuccessfulDrpAlerts
+}
+
+INPUT_OBJECT DRPAlertBulkAssignmentInput {
+  assignee
+  comment
+  filter
+}
+
+INPUT_OBJECT DRPAlertBulkUnassignmentInput {
+  comment
+  filter
+}
+
+INPUT_OBJECT DRPAlertBulkUnwatchInput {
+  comment
+  filter
+}
+
+INPUT_OBJECT DRPAlertBulkWatchInput {
+  filter
+}
+
+INPUT_OBJECT DRPAlertBy {
+  id
+  shortCode
+}
+
+OBJECT DRPAlertComment {
+  id
+  user
+  alert
+  comment
+  createdAt
+  updatedAt
+  removedAt
+}
+
+OBJECT DRPAlertConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT DRPAlertEdge {
+  cursor
+  node
+}
+
+OBJECT DRPAlertFlag {
+  user
+  timestamp
+}
+
+INPUT_OBJECT DRPAlertOrder {
+  orderBy
+  direction
+}
+
+ENUM DRPAlertOrderBy { CREATED_AT, STATE }
+
+OBJECT DRPAlertResponse {
+  success
+  drpAlert
+}
+
+ENUM DRPAlertSeverity { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL, UNKNOWN }
+
+ENUM DRPAlertState { NEW, IN_PROGRESS, RESOLVED, REJECTED, UNKNOWN }
+
+OBJECT DRPAlertStateData {
+  state
+  version
+  user
+  comment
+  timestamp
+}
+
+INPUT_OBJECT DRPAlertUnassignmentInput {
+  comment
+  shortCode
+}
+
+OBJECT DRPAlertWatchDetailResponse {
+  success
+  id
+  user
+  alert
+  timestamp
+}
+
+OBJECT DRPAlertWatchResponse {
+  success
+  unsuccessfulDrpAlerts
+}
+
+OBJECT DRPAlertWatcher {
+  user
+  timestamp
+}
+
+OBJECT DRPAsset {
+  id
+  serialId
+  value
+  status
+  approvalState
+  archivedState
+  type
+  created
+  modified
+  deleted
+  createdBy
+  modifiedBy
+  clientId
+  labels
+  pending
+  criticality
+  cost
+  sensitivity
+}
+
+OBJECT DRPAssetColor {
+  red
+  green
+  blue
+}
+
+OBJECT DRPAssetNetRange {
+  lowerAddress
+  upperAddress
+  maskBits
+  lower
+  upper
+  isIPv4
+}
+
+OBJECT DRPAssetS3Resource {
+  id
+  s3Uri
+  fileName
+}
+
+OBJECT DRPAssetValue {
+  type
+  displayValue
+  domain
+  marking
+  identifier
+  key
+  range
+  logos
+  sector
+  colorPalette
+  b2bServices
+  b2cServices
+  primaryTrading
+  revenueGeneration
+  recruitmentUse
+  uri
+  sharedPublic
+  sharedTrusted
+  internalOnly
+  sensitiveInternal
+  criticalAsset
+  associatedPii
+  clientServices
+  employeeServices
+  testingEnvironment
+  sensitiveInformationAccess
+  thirdPartyAccess
+  testEnvironmentAccess
+  hashAlgorithm
+  appName
+  developerName
+  appUrl
+  logoUrl
+  hostingPii
+  thirdPartyInfrastructure
+  profile
+  platform
+  hashtag
+  number
+  name
+  keyword
+  format
+  packageName
+  codeIdentifier
+}
+
+OBJECT DRPAssetWeightedRiskScore {
+  criticality
+  sensitivity
+  cost
+  weightedScore
+}
+
+OBJECT DRPAssociatedUrl {
+  url
+  reported
+}
+
+OBJECT DRPCommitDetails {
+  sha
+  url
+  message
+  commitDateTime
+  committer
+  author
+  repository
+  totalFiles
+}
+
+OBJECT DRPCommitUser {
+  type
+  username
+  email
+  userDetails
+}
+
+OBJECT DRPCommitUserDetails {
+  type
+  avatarUrl
+  hostingProviderUrl
+  fullName
+  company
+  location
+  bio
+  privateRepos
+  followers
+  following
+  created
+  updated
+}
+
+OBJECT DRPContentDetails {
+  mimeType
+  title
+  subject
+  category
+  comments
+  description
+  contentStatus
+  keywords
+  revisionNumber
+  encrypted
+  trapped
+  originalLocation
+  protectedContent
+}
+
+OBJECT DRPContentHashes {
+  md5
+  sha1
+  sha256
+}
+
+OBJECT DRPCredential {
+  email
+  password
+  passwordType
+  firstDetection
+  latestDetection
+  latestMalwareDetection
+  detectionSourceSummary
+  closedSource
+  darkWeb
+}
+
+OBJECT DRPCredentialExposureData {
+  riskType
+  credential
+  credentialValidation
+}
+
+OBJECT DRPCredentialValidation {
+  emailFormatState
+  passwordFormatState
+  oktaResponse
+  azureResponse
+  emailFileResponse
+}
+
+OBJECT DRPDetectionDetails {
+  id
+  sourceHost
+  created
+  collected
+  sourceUri
+  rowText
+  headerText
+  inProgress
+  totalUniqueEmails
+  totalUniqueDomains
+  title
+  clientIncidentId
+  fromMalwareStealerLog
+  malwareStealerHeader
+}
+
+OBJECT DRPDetectionSourceSummary {
+  source
+  count
+}
+
+OBJECT DRPDnsResourceRecord {
+  dnsRecordType
+  rdata
+}
+
+OBJECT DRPDomainContent {
+  screenshotUri
+  htmlContentUri
+  present
+  errored
+  collected
+}
+
+OBJECT DRPEntitySummary {
+  source
+  summaryText
+  domain
+  sourceDate
+  type
+  contentRemoved
+  contentReplaced
+  screenshot
+  screenshotId
+  screenshotThumbnailId
+  marketplaceListing
+  dnsZone
+  whoisDomain
+  whoisNetworks
+  originalDomains
+  primary
+  primaryMessage
+  postSnapshot
+  conversationFragmentMessages
+  conversationFragment
+  details
+  tweet
+  ports
+  vulnerability
+  whitelistedPorts
+  associatedDomainNames
+  certificateInspection
+  certificate
+  knownIssues
+  secureSocketInspections
+  affectedDomains
+  redirectsTo
+  secureSocketInspection
+}
+
+OBJECT DRPEntitySummaryAbstractTweet {
+  tweetId
+  authorId
+  authorName
+  text
+  createdAt
+  retweetCount
+  likeCount
+  hashtags
+}
+
+OBJECT DRPEntitySummaryCertificateInspection {
+  certificateId
+  issuer
+  subject
+  validFrom
+  validTo
+  signatureAlgorithm
+  keyAlgorithm
+  fingerprint
+  valid
+}
+
+OBJECT DRPEntitySummaryChatChannelDetails {
+  channelAlias
+  democracy
+  megaGroup
+  restricted
+  title
+  verified
+}
+
+OBJECT DRPEntitySummaryChatLocation {
+  map
+  longitude
+  latitude
+}
+
+OBJECT DRPEntitySummaryChatMediaFile {
+  id
+  caption
+  file
+  image
+  thumbnail
+  fileName
+  fileType
+  fileSubType
+  oversized
+  contentLength
+}
+
+OBJECT DRPEntitySummaryChatMediaFileResourceRef {
+  id
+  link
+}
+
+OBJECT DRPEntitySummaryChatMessage {
+  id
+  protocol
+  channel
+  channelDetails
+  sent
+  sentLocations
+  content
+  post
+  searchId
+  user
+  server
+  sentMediaFiles
+}
+
+OBJECT DRPEntitySummaryChatMessageUser {
+  id
+  uri
+  username
+  avatar
+}
+
+OBJECT DRPEntitySummaryChatMessageUserAvatar {
+  link
+}
+
+OBJECT DRPEntitySummaryChatServer {
+  host
+}
+
+OBJECT DRPEntitySummaryConversationFragment {
+  server
+  channel
+  messages
+  focusMessageIndex
+}
+
+OBJECT DRPEntitySummaryDetectedVulnerability {
+  vulnerabilityId
+  title
+  description
+  severity
+  cvssScore
+  cveId
+  references
+}
+
+OBJECT DRPEntitySummaryDnsZone {
+  zoneName
+  nameServers
+  recordCount
+  lastRefreshed
+}
+
+OBJECT DRPEntitySummaryForumPostSnapshot {
+  postId
+  threadId
+  threadTitle
+  authorId
+  authorName
+  content
+  postedAt
+  tags
+}
+
+OBJECT DRPEntitySummaryIpAddressDetails {
+  ipAddress
+  hostName
+  asn
+  organization
+  isp
+  city
+  region
+  country
+  latitude
+  longitude
+}
+
+OBJECT DRPEntitySummaryIpPortInspection {
+  ipAddress
+  port
+  protocol
+  service
+  state
+  banner
+  scannedAt
+}
+
+OBJECT DRPEntitySummaryMarketplaceListing {
+  id
+  uri
+  seller
+  title
+  textDescription
+  htmlDescription
+  screenshot
+  images
+  soldSince
+  labels
+  unitPrices
+  categories
+}
+
+OBJECT DRPEntitySummaryMarketplaceListingCategory {
+  parent
+  label
+}
+
+OBJECT DRPEntitySummaryMarketplaceListingSimpleCategory {
+  label
+}
+
+OBJECT DRPEntitySummaryMarketplaceListingUnitPrice {
+  amount
+  currency
+}
+
+OBJECT DRPEntitySummaryMarketplaceSeller {
+  id
+  uri
+  username
+  avatar
+  contactMethods
+  badges
+  publicPgpKey
+  joinDate
+  lastOnline
+}
+
+OBJECT DRPEntitySummaryMarketplaceSellerContactMethod {
+  id
+  seller
+  type
+  identifier
+  created
+}
+
+OBJECT DRPEntitySummaryMessage {
+  sent
+  username
+  nickname
+  content
+}
+
+OBJECT DRPEntitySummaryMobileAppPrimary {
+  appId
+  name
+  packageName
+  versionName
+  versionCode
+  developer
+  storeUrl
+}
+
+OBJECT DRPEntitySummarySecureSocketInspection {
+  host
+  port
+  protocol
+  supportedCipherSuites
+  certificateChain
+  knownIssues
+  handshakeSuccessful
+}
+
+OBJECT DRPEntitySummarySecureSocketInspectionPrimaryPage {
+  content
+  currentPage
+  total
+}
+
+OBJECT DRPEntitySummarySecureSocketsKnownIssueSpec {
+  issueId
+  description
+  severity
+  affectedProtocols
+  recommendation
+}
+
+OBJECT DRPEntitySummaryWhoisNetwork {
+  id
+  name
+  range
+  registry
+  abuseEmail
+  captured
+  autonomousSystemNumber
+}
+
+OBJECT DRPEntitySummaryX509CertificateRecord {
+  serialNumber
+  issuerDistinguishedName
+  subjectDistinguishedName
+  notBefore
+  notAfter
+  publicKeyAlgorithm
+  signatureAlgorithm
+  fingerprint
+  version
+}
+
+OBJECT DRPExposedAccessKeyData {
+  riskType
+  key
+  secret
+  accessKeyType
+  sourceSummaries
+  authors
+  firstExposed
+  latestSource
+}
+
+OBJECT DRPExposedAccessKeySource {
+  sourceUrl
+  groupUrl
+  filename
+  sourceType
+  contentUri
+  updated
+  matches
+  latestSourceDetails
+  authorDetails
+}
+
+OBJECT DRPExposedAccessKeySourceSummary {
+  sourceHost
+  count
+}
+
+OBJECT DRPExposedCommercialDocumentData {
+  riskType
+  file
+  source
+}
+
+OBJECT DRPExposedPort {
+  portNumber
+  transport
+  scannedOn
+  detectedClosed
+  banner
+  ipPortInspectionReview
+}
+
+OBJECT DRPExposedPortData {
+  riskType
+  exposedPorts
+  ipAddressDetails
+}
+
+OBJECT DRPExposedTechnicalDocumentData {
+  riskType
+  file
+  source
+}
+
+OBJECT DRPExternalLogoDetections {
+  asset
+  updated
+  logo
+  detections
+  total
+}
+
+OBJECT DRPExternalSourceSpecificDetails {
+  type
+  name
+  url
+  commitCount
+  contributorCount
+  repositoryDetails
+}
+
+OBJECT DRPFileDetails {
+  contentHashes
+  firstCollected
+  lastModified
+  metadata
+  pdfPreview
+  screenshot
+}
+
+ENUM DRPFileGroup { THREE_D_IMAGE_FILES, AUDIO_FILES, BACKUP_FILES, CAD_FILES, COMPRESSED_FILES, DATABASE_FILES, DATA_FILES, DEVELOPER_FILES, DISK_IMAGE_FILES, ENCODED_FILES, EXECUTABLE_FILES, FONT_FILES, GAME_FILES, GIS_FILES, MISC_FILES, PAGE_LAYOUT_FILES, PLUGIN_FILES, RASTER_IMAGE_FILES, SETTINGS_FILES, SPREADSHEET_FILES, SYSTEM_FILES, TEXT_FILES, VECTOR_IMAGE_FILES, VIDEO_FILES, WEB_FILES, OTHER }
+
+OBJECT DRPFileMetadata {
+  accessControl
+  statistics
+  timeline
+  software
+  ownership
+  content
+  xmpMediaManagement
+  customMetadata
+  unknownMetadata
+}
+
+OBJECT DRPFileTypeSummary {
+  extension
+  group
+  count
+}
+
+OBJECT DRPGeospatial {
+  city
+  country
+  countryCode
+  latitude
+  longitude
+  postcode
+}
+
+OBJECT DRPGitRepository {
+  created
+  description
+  fork
+  forksCount
+  fullName
+  homepage
+  mirrorUri
+  ownerEmail
+  ownerId
+  ownerUsername
+  parent
+  privateRepo
+  programmingLanguage
+  pushed
+  readme
+  size
+  source
+  type
+  updated
+  watchersCount
+}
+
+OBJECT DRPGithubRepositoryDetails {
+  type
+  ownerEmail
+  ownerId
+  ownerUsername
+  fullName
+  description
+  privateRepo
+  created
+  updated
+  homepage
+  size
+  watchersCount
+  forksCount
+  readme
+  pushed
+  programmingLanguage
+  mirrorUri
+}
+
+OBJECT DRPGitlabRepositoryDetails {
+  type
+  ownerEmail
+  ownerId
+  ownerUsername
+  fullName
+  description
+  privateRepo
+  created
+  updated
+  homepage
+  size
+  watchersCount
+  forksCount
+  readme
+  parent
+}
+
+INTERFACE DRPHostingSpecificRepositoryDetails {
+  type
+  ownerEmail
+  ownerId
+  ownerUsername
+  fullName
+  description
+  privateRepo
+  created
+  updated
+  homepage
+  size
+  watchersCount
+  forksCount
+  readme
+}
+
+OBJECT DRPHtmlHistoryDetail {
+  fileUrl
+  sourceCodeUrl
+  updated
+  matches
+}
+
+OBJECT DRPIPAddressDetails {
+  ipAddress
+  captured
+  reverseDomainNames
+  location
+  serviceProvider
+  assignee
+}
+
+OBJECT DRPImpersonatingCompanyProfileData {
+  riskType
+  url
+  webpageContent
+  hostname
+  domainName
+  capturedDate
+  pageTitle
+  handle
+  verified
+  likeCount
+  followerCount
+  followingCount
+  postCount
+  accountCreated
+  lastActive
+  biography
+  collectedBy
+  containsBrandImagery
+  containsEmployeeImagery
+}
+
+OBJECT DRPImpersonatingDomain {
+  name
+  tld
+  whois
+  dnsRecords
+  domainContent
+  collected
+  isNewlyRegistered
+  associatedUrls
+}
+
+OBJECT DRPImpersonatingDomainData {
+  riskType
+  impersonatingDomain
+  reportedContent
+  externalLogoDetections
+}
+
+OBJECT DRPImpersonatingEmployeeProfileData {
+  riskType
+  url
+  webpageContent
+  hostname
+  domainName
+  capturedDate
+  pageTitle
+  handle
+  verified
+  likeCount
+  followerCount
+  followingCount
+  postCount
+  accountCreated
+  lastActive
+  biography
+  collectedBy
+  containsBrandImagery
+  containsEmployeeImagery
+}
+
+OBJECT DRPImpersonatingSubdomainData {
+  riskType
+  subdomain
+  reportedContent
+  externalDomainContentMatches
+  externalLogoDetections
+}
+
+OBJECT DRPIofsStatistics {
+  totalFileSizeBytes
+  totalFileCount
+  earliestModifiedDateTime
+  latestModifiedDateTime
+  fileSummaries
+  from
+  to
+}
+
+OBJECT DRPIpPortDetails {
+  iofsStatistics
+}
+
+OBJECT DRPIpPortInspectionReview {
+  created
+  ipPortInspectionStatus
+  version
+  user
+  portNumber
+}
+
+OBJECT DRPIpPortTransport {
+  portNumber
+  transport
+  portInspectionDetails
+}
+
+OBJECT DRPLogoDetection {
+  source
+  matchCount
+  confidenceScore
+}
+
+OBJECT DRPMagnitudeOfLoss {
+  mostLikelyThreatScore
+  assetWeightedRiskScore
+  score
+}
+
+OBJECT DRPMarkedDocumentData {
+  riskType
+  file
+  source
+}
+
+OBJECT DRPMatchDetail {
+  matchType
+  matchValue
+  total
+  snippets
+}
+
+OBJECT DRPOriginatingAlert {
+  alertType
+  supersededBy
+  shortCode
+  createdAt
+  raisedAt
+  riskFunctionId
+  riskScoreAssessment
+  assetMatches
+  deletedAssets
+  logoDetections
+  alertData
+}
+
+INTERFACE DRPOriginatingAlertData {
+  riskType
+}
+
+OBJECT DRPOriginatingIncident {
+  id
+  scope
+  type
+  severity
+  title
+  published
+  closedSource
+  modified
+  occurred
+  verified
+  tags
+  version
+  score
+  entitySummary
+  description
+  linkedContentIncidents
+  internal
+  restrictedContent
+  alerted
+  impactDescription
+  takedownRequestCount
+  review
+  riskType
+  riskAssessment
+}
+
+OBJECT DRPOriginator {
+  originatorType
+  alert
+  incident
+}
+
+ENUM DRPOriginatorType { ALERT, INCIDENT }
+
+OBJECT DRPOwnershipDetails {
+  initialAuthor
+  author
+  lastAuthor
+  company
+  manager
+  publisher
+}
+
+OBJECT DRPPhishingSite {
+  url
+  webpageContent
+  tweetContent
+  hostname
+  domainName
+  capturedData
+  source
+  sourceUrl
+  whois
+  dnsRecords
+}
+
+OBJECT DRPPhishingSiteData {
+  riskType
+  phishingSite
+  reportedContent
+}
+
+OBJECT DRPReportedContent {
+  user
+  timestamp
+  contentUri
+  domainName
+  scope
+}
+
+OBJECT DRPRepository {
+  name
+  url
+}
+
+ENUM DRPRepositoryType { GITLAB, GITHUB }
+
+OBJECT DRPReview {
+  status
+  version
+  user
+  created
+}
+
+OBJECT DRPRiskAssessment {
+  assessedOn
+  riskLevel
+  riskImpact
+  riskLikelihood
+}
+
+OBJECT DRPRiskCalculation {
+  class
+  version
+}
+
+OBJECT DRPRiskFactors {
+  type
+  highCriticalityKeyType
+  exposedOnPasteSite
+  exposedOnGitRepo
+  exposedOnClientGitRepo
+  committedByEmployee
+  assetTextMatch
+  assetAccessKey
+  hasAssetsInContent
+  referencingClientContent
+  parkingPage
+  logoDetection
+  isDomainInThreatFeed
+  hostsLoginForm
+  newlyRegistered
+  hasDns
+  hasMx
+  hasContent
+  isSubdomainInThreatFeed
+  isDomainNewlyRegistered
+  isFirstSeenRecently
+  isMxRecordExists
+  isDnsRecordExists
+  hostingContent
+  forkCount
+  userOwnsRepo
+}
+
+OBJECT DRPRiskImpact {
+  riskImpactLevel
+  assetIds
+}
+
+OBJECT DRPRiskLikelihood {
+  riskLikelihoodLevel
+  riskFactors
+}
+
+OBJECT DRPRiskScore {
+  score
+  riskSize
+}
+
+OBJECT DRPRiskScoreAssessment {
+  calculation
+  magnitudeOfLoss
+  likelihoodOfLoss
+  riskScore
+  riskFactors
+}
+
+ENUM DRPRiskType { ASSOCIATION_WITH_MALWARE, CUSTOM_CLIENT_REQUEST, COUNTERFEIT_CURRENCY, CREDENTIAL_EXPOSURE, EVIDENCE_OF_ADVERSARY_IMPACT, EVIDENCE_OF_CREDENTIAL_ACCESS, EVIDENCE_OF_INITIAL_ACCESS, EVIDENCE_OF_RECONNAISSANCE, EVIDENCE_OF_RESOURCE_DEVELOPMENT, EXPIRED_CERTIFICATE, EXPOSED_ACCESS_KEY, EXPOSED_CLOUD_SERVICE, EXPOSED_COMMERCIAL_DOCUMENT, EXPOSED_CUSTOMER_ACCOUNT, EXPOSED_DEVICE, EXPOSED_EMPLOYEE_PII, EXPOSED_PAYMENT_CARD, EXPOSED_TECHNICAL_DOCUMENT, GENERAL, IMPERSONATING_COMPANY_PROFILE, IMPERSONATING_DOMAIN, IMPERSONATING_EMPLOYEE_PROFILE, IMPERSONATING_MOBILE_APP, IMPERSONATING_SUBDOMAIN, LEAKED_SENSITIVE_CODE, LEAKED_SENSITIVE_TECHNOLOGY, MARKED_DOCUMENT, MENTION_BY_A_THREAT_ACTOR, MISCONFIGURED_WEB_SERVER, NEGATIVE_PUBLICITY, OPEN_PORT, PHISHING_REPORT, PHISHING_SITE, REPORTED_DATA_BREACH, REPORT_OF_BOTNET_ACTIVITY, REPORT_OF_TECHNICAL_VULNERABILITY, SELLING_UNAUTHORIZED_GOODS, UNAUTHORIZED_CODE_COMMIT, UNRECOGNIZED, VULNERABLE_PRODUCT, VULNERABLE_SERVICE, WEAK_CERTIFICATE, UNKNOWN, ASSOCIATION_WITH_PHISHING_KIT, CCR_BRAND, CCR_TECH, CCR_THREAT, GENERAL_BRAND, GENERAL_TECH, GENERAL_THREAT, MENTION_IN_RELATION_TO_A_TTP, PHISHING_EMAIL, VULNERABLE_CERTIFICATE }
+
+OBJECT DRPSnippetDetail {
+  htmlSnippet
+  length
+  lineNumber
+  offset
+  referencingClientContent
+}
+
+OBJECT DRPSoftwareDetails {
+  application
+  applicationVersion
+  creator
+  producer
+  template
+  pdfExtensionVersion
+}
+
+OBJECT DRPSourceDetails {
+  location
+  hostType
+  domain
+  ipAddress
+  sourceStatus
+}
+
+OBJECT DRPSourceStatus {
+  firstSeen
+  lastAvailable
+  lastCheckedAt
+}
+
+OBJECT DRPStatistics {
+  characterCount
+  characterCountWithSpaces
+  imageCount
+  objectCount
+  paragraphCount
+  slideCount
+  tableCount
+  wordCount
+  lineCount
+  editTime
+  editingCycles
+  totalTime
+  pageCount
+}
+
+OBJECT DRPSubdomain {
+  name
+  tld
+  parentName
+  parentWhois
+  dnsRecords
+  collected
+  firstSeen
+  content
+  associatedUrls
+}
+
+OBJECT DRPTag {
+  name
+  type
+}
+
+OBJECT DRPTextMatch {
+  offset
+  matchText
+  snippet
+}
+
+OBJECT DRPThreatScore {
+  threat
+  productivity
+  legal
+  replacement
+  response
+  competitiveAdvantage
+  reputation
+  score
+}
+
+OBJECT DRPTimeline {
+  created
+  modified
+  printed
+  saved
+}
+
+ENUM DRPTransportProtocol { TCP, UDP }
+
+OBJECT DRPTweetContent {
+  name
+  verified
+  screenName
+  retweeted
+  retweets
+  likes
+  posted
+  tweetBody
+  tweetUri
+  captured
+  profileImageUri
+  imageUris
+}
+
+OBJECT DRPUnauthorizedCodeCommitData {
+  riskType
+  commit
+  latestCommitTimestamp
+  latestCommitSha
+  gitEmailSource
+  user
+  email
+  sourceRepositoryUrl
+  topRepository
+  repositoriesCommittedTo
+  uniqueCommitCount
+  repositoriesCommittedCount
+}
+
+OBJECT DRPUnknownMetadata {
+  key
+  value
+}
+
+OBJECT DRPValidationResponse {
+  state
+  unknownReason
+}
+
+OBJECT DRPWebpageContent {
+  screenshotUri
+  collected
+}
+
+OBJECT DRPWhoIs {
+  domainName
+  updated
+  created
+  expires
+  registrarName
+  registrarId
+  registrarAbuseEmail
+  registrarAbusePhone
+  contacts
+}
+
+OBJECT DRPWhoIsContact {
+  name
+  contactType
+  organization
+  email
+  phone
+  phoneExt
+  fax
+  faxExt
+  postcode
+  street
+  city
+  state
+  country
+}
+
+ENUM DRPWhoIsContactType { ADMIN, BILLING, REGISTRANT, TECH, ZONE, OTHER }
+
+OBJECT DRPXmpMediaManagement {
+  instanceId
+  documentId
+  derivedFromDocumentId
+  derivedFromInstanceId
+  historyInstanceId
+  historyAction
+  historyWhen
+  historySoftwareAgent
+}
+
+INPUT_OBJECT DataBy {
+  incidentId
+}
+
+OBJECT DataSourceField {
+  name
+  type
+}
+
+OBJECT DataSourceResponse {
+  schema
+}
+
+OBJECT DataSourceSchema {
+  fields
+}
+
+INPUT_OBJECT DateFilter {
+  date
+  operator
+}
+
+ENUM DateOperator { ON, BEFORE, AFTER }
+
+
+OBJECT DateTimeChanged {
+  oldValue
+  newValue
+}
+
+ENUM DayOfWeek { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
+
+OBJECT DeleteAccessGroupResponse {
+  success
+}
+
+OBJECT DeleteApiKeyResponse {
+  success
+}
+
+INPUT_OBJECT DeleteAssetInput {
+  assetId
+  comment
+}
+
+OBJECT DeleteAssetResponse {
+  success
+  message
+}
+
+OBJECT DeleteEmergencyContactResponse {
+  success
+}
+
+OBJECT DeletePodResponse {
+  success
+}
+
+OBJECT DeleteRoleResponse {
+  success
+}
+
+OBJECT DeleteUserResponse {
+  success
+}
+
+ENUM DetectFeedRequestType { NEW_RULE, RULE_ENABLE, RULE_DISABLE, TUNING_UPDATE, OTHER }
+
+OBJECT DetectionBulkJob {
+  id
+  description
+  status
+}
+
+ENUM DetectionBulkJobStatus { COMPLETED_NEEDS_ATTENTION, COMPLETED_SUCCESSFULLY, FAILED, IN_PROGRESS, CANCELLED, CANCELLED_AND_DISABLED, CANCELLED_AND_DELETED }
+
+OBJECT DetectionMigrationJob {
+  id
+  customer
+  customerDetection
+  jobStatus
+  reason
+}
+
+ENUM DetectionMigrationJobStatus { RUNNING, COMPLETED, FAILED, CANCELED }
+
+OBJECT DetectionRule {
+  id
+  name
+  slug
+  description
+  updatedAt
+  severity
+  state
+  mitreTacticTechniques
+  mitreTacticNames
+  logSourceTypes
+  logic
+}
+
+INPUT_OBJECT DetectionRuleAuthorFilter {
+  connectorId
+  reliaQuest
+}
+
+OBJECT DetectionRuleConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+INPUT_OBJECT DetectionRuleDeployedFilter {
+  connectorId
+  greymatter
+  digitalRiskProtection
+}
+
+OBJECT DetectionRuleEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT DetectionRuleFilter {
+  search
+  names
+  severities
+  riskScenarioTags
+  mitreTechniqueIds
+  mitreTechniqueNames
+  mitreTacticIds
+  mitreTacticNames
+  ids
+  status
+  statuses
+  startDate
+  endDate
+  sourceTypes
+  authors
+  technologies
+  deployedLocations
+  killchainPhases
+}
+
+OBJECT DetectionRuleLogic {
+  logic
+  severity
+  version
+}
+
+INPUT_OBJECT DetectionRuleLogicBy {
+  version
+  deployed
+  latest
+}
+
+INPUT_OBJECT DetectionRuleOrder {
+  orderBy
+  direction
+}
+
+ENUM DetectionRuleOrderBy { ID, SEVERITY, UPDATED_AT, SLUG, NAME, STATE }
+
+ENUM DetectionRuleStatus { DEPLOYED, NOT_DEPLOYED }
+
+INPUT_OBJECT DetectionRuleTechnologyFilter {
+  connectorId
+  digitalLandscape
+}
+
+ENUM DetectionTestingValidationStatus { ERROR, SUCCESS, CUSTOM, IN_PROGRESS, NO_RESULT }
+
+OBJECT DiscoverExposure {
+  id
+  customer
+  exposure
+  type
+  description
+  aiSummary
+  mitigations
+  mitreTacticTechniques
+}
+
+ENUM DiscoverExposureType { VULNERABILITY, CLOUD_MISCONFIGURATION, COVERAGE_GAP }
+
+OBJECT DiscoverTask {
+  id
+  customer
+  title
+  state
+  closeCode
+  severity
+  assignee
+  exposure
+  integrations
+  createdAt
+  updatedAt
+  activity
+  comments
+}
+
+INPUT_OBJECT DiscoverTaskActivityFilter {
+  created
+}
+
+OBJECT DiscoverTaskActivityLogConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT DiscoverTaskActivityLogEdge {
+  cursor
+  node
+}
+
+OBJECT DiscoverTaskActivityLogEntry {
+  id
+  createdAt
+  createdBy
+  state
+  closeCode
+  severity
+  assignee
+}
+
+INPUT_OBJECT DiscoverTaskActivityOrder {
+  orderByList
+  direction
+}
+
+ENUM DiscoverTaskActivityOrderBy { CREATED_AT, FIELD }
+
+INPUT_OBJECT DiscoverTaskBy {
+  id
+}
+
+ENUM DiscoverTaskCloseCode { MITIGATED, ACCEPTED_RISK }
+
+OBJECT DiscoverTaskCloseCodeChanged {
+  oldValue
+  newValue
+}
+
+OBJECT DiscoverTaskComment {
+  id
+  text
+  createdAt
+  updatedAt
+  createdBy
+  updatedBy
+}
+
+OBJECT DiscoverTaskCommentConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT DiscoverTaskCommentEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT DiscoverTaskCommentFilter {
+  created
+}
+
+INPUT_OBJECT DiscoverTaskCommentOrder {
+  orderBy
+  direction
+}
+
+ENUM DiscoverTaskCommentOrderBy { CREATED_AT, UPDATED_AT }
+
+OBJECT DiscoverTaskConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT DiscoverTaskEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT DiscoverTaskFilter {
+  search
+}
+
+INPUT_OBJECT DiscoverTaskOrder {
+  orderBy
+  direction
+}
+
+ENUM DiscoverTaskOrderBy { CREATED_AT, UPDATED_AT, SEVERITY, STATE }
+
+OBJECT DiscoverTaskResponse {
+  success
+  discoverTask
+}
+
+ENUM DiscoverTaskSeverity { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL }
+
+OBJECT DiscoverTaskSeverityChanged {
+  oldValue
+  newValue
+}
+
+ENUM DiscoverTaskState { NEW, IN_PROGRESS, CLOSED }
+
+OBJECT DiscoverTaskStateChanged {
+  oldValue
+  newValue
+}
+
+OBJECT DraftCustomerDetection {
+  id
+  displaySlug
+  sourceType
+  detectionSource
+  integration
+  globalDetection
+  publishedVersion
+  customer
+  activityLogEntries
+}
+
+INPUT_OBJECT DraftCustomerDetectionBy {
+  id
+  publishedVersionId
+  displaySlug
+}
+
+OBJECT DraftCustomerDetectionConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT DraftCustomerDetectionEdge {
+  cursor
+  node
+}
+
+OBJECT DraftDetectionTestingResults {
+  id
+}
+
+INPUT_OBJECT DrpAlertBulkCommentBy {
+  filter
+}
+
+INPUT_OBJECT DrpAlertBulkCommentInput {
+  comment
+  bulkCommentBy
+}
+
+OBJECT DrpAlertBulkResponse {
+  success
+  actioned
+  ignored
+}
+
+OBJECT DrpAlertBulkUpdateStateResponse {
+  success
+  updated
+  failed
+}
+
+INPUT_OBJECT DrpAlertCommentInput {
+  drpAlertBy
+  comment
+}
+
+OBJECT DrpAlertCommentResponse {
+  success
+}
+
+INPUT_OBJECT DrpAlertDeleteCommentInput {
+  drpAlertComment
+}
+
+INPUT_OBJECT DrpAlertUpdateCommentInput {
+  drpAlertComment
+  comment
+}
+
+ENUM DrpReportAssetType { ACCESS_KEY, ACCESS_KEY_HASH, BRAND, CODE_FORMAT, CODE_REPOSITORY, COMPANY, DLP_IDENTIFIER, DOCUMENT_MARKING, DOMAIN, GENERAL_KEYWORD, IIN, KEY_STAFF_MEMBER, MOBILE_APP, MOBILE_APP_KEYWORD, NET_RANGE, PACKAGE_NAME, PHONE_NUMBER, SENSITIVE_CODE_IDENTIFIER, SENSITIVE_KEYWORD, SERVER_FORMAT, SERVER_NAME, SOCIAL_MEDIA_HASHTAG, SOCIAL_MEDIA_PROFILE, SUPPLIER, UNRECOGNIZED }
+
+INPUT_OBJECT DrpReportClassificationsAndRiskFactorsInput {
+  classification
+  riskFactorKeys
+}
+
+OBJECT DrpReportCustomTriageTableWidgetDataLabels {
+  value
+}
+
+OBJECT DrpReportCustomTriageTableWidgetDataRiskAttribute {
+  current
+  maximum
+}
+
+OBJECT DrpReportImageRef {
+  id
+  link
+  restricted
+}
+
+ENUM DrpReportIncidentScope { GLOBAL, ORGANIZATION, REFERENCE }
+
+ENUM DrpReportIncidentSeverity { VERY_HIGH, HIGH, MEDIUM, LOW, VERY_LOW, NONE }
+
+OBJECT DrpReportLargeImageRef {
+  id
+  link
+  restricted
+  thumbnail
+}
+
+OBJECT DrpReportLinkedContentIncident {
+  title
+  occurred
+  severity
+  scope
+}
+
+ENUM DrpReportRiskSize { NONE, VERY_LOW, LOW, MEDIUM, HIGH, VERY_HIGH }
+
+ENUM DrpReportRiskType { ASSOCIATION_WITH_MALWARE, CUSTOM_CLIENT_REQUEST, COUNTERFEIT_CURRENCY, CREDENTIAL_EXPOSURE, EVIDENCE_OF_ADVERSARY_IMPACT, EVIDENCE_OF_CREDENTIAL_ACCESS, EVIDENCE_OF_INITIAL_ACCESS, EVIDENCE_OF_RECONNAISSANCE, EVIDENCE_OF_RESOURCE_DEVELOPMENT, EXPIRED_CERTIFICATE, EXPOSED_ACCESS_KEY, EXPOSED_CLOUD_SERVICE, EXPOSED_COMMERCIAL_DOCUMENT, EXPOSED_CUSTOMER_ACCOUNT, EXPOSED_DEVICE, EXPOSED_EMPLOYEE_PII, EXPOSED_PAYMENT_CARD, EXPOSED_TECHNICAL_DOCUMENT, GENERAL, IMPERSONATING_COMPANY_PROFILE, IMPERSONATING_DOMAIN, IMPERSONATING_EMPLOYEE_PROFILE, IMPERSONATING_MOBILE_APP, IMPERSONATING_SUBDOMAIN, LEAKED_SENSITIVE_CODE, LEAKED_SENSITIVE_TECHNOLOGY, MARKED_DOCUMENT, MENTION_BY_A_THREAT_ACTOR, MISCONFIGURED_WEB_SERVER, NEGATIVE_PUBLICITY, OPEN_PORT, PHISHING_REPORT, PHISHING_SITE, REPORTED_DATA_BREACH, REPORT_OF_BOTNET_ACTIVITY, REPORT_OF_TECHNICAL_VULNERABILITY, REVOKED_CERTIFICATE, SELLING_UNAUTHORIZED_GOODS, UNAUTHORIZED_CODE_COMMIT, UNRECOGNIZED, VULNERABLE_PRODUCT, VULNERABLE_SERVICE, WEAK_CERTIFICATE, ASSOCIATION_WITH_PHISHING_KIT, CCR_BRAND, CCR_TECH, CCR_THREAT, GENERAL_BRAND, GENERAL_TECH, GENERAL_THREAT, MENTION_IN_RELATION_TO_A_TTP, PHISHING_EMAIL, VULNERABLE_CERTIFICATE }
+
+INPUT_OBJECT DrpReportRiskTypesAndRiskFactorsInput {
+  riskType
+  riskFactorKeys
+}
+
+INPUT_OBJECT DrpReportTriageItemAssigneeFilterInput {
+  includeUnassigned
+  assignees
+}
+
+ENUM DrpReportTriageItemTakedownState { AVAILABLE, UNAVAILABLE, SUBMITTED, IN_REVIEW, IN_PROGRESS, COMPLETED, CLARIFICATION_REQUIRED, CLARIFICATION_PROVIDED, TERMINATED, NOT_ENFORCEABLE, NO_ACTION_REQUIRED, REJECTED }
+
+INPUT_OBJECT DrpReportTriageItemViewFilterInput {
+  riskSizes
+  statuses
+  assetTypes
+  assetSerialIds
+  sourceRefs
+  externalIds
+  alertExternalIds
+  shortCodes
+  takedownStatuses
+  sourceGroups
+  active
+  superseded
+  created
+  updated
+  domain
+  hosts
+  takedownRequested
+  flagged
+  watched
+  assetLabelIds
+  alertFingerprints
+  clients
+  migrated
+  sourceUris
+  deleted
+  systemAction
+  idGreaterThan
+  rejectedByRuleSerialId
+  singleRuleRejection
+  classificationsAndRiskFactors
+  riskTypesAndRiskFactors
+  assignees
+}
+
+INTERFACE Edge {
+  cursor
+  node
+}
+
+OBJECT EmergencyContact {
+  id
+  user
+  customer
+  fullName
+  phoneNumber
+  callAttempts
+  callCategories
+  callOrder
+  callWindows
+  onCall
+}
+
+OBJECT EmergencyContactConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT EmergencyContactEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT EmergencyContactFilter {
+  available
+  greyMatterUser
+  callCategories
+}
+
+INPUT_OBJECT EmergencyContactOrder {
+  orderBy
+  direction
+}
+
+ENUM EmergencyContactOrderBy { FULL_NAME, CALL_CATEGORY, CALL_ORDER }
+
+OBJECT EngineeringTaskChangeWindowDetails {
+  startDateTime
+  endDateTime
+  reason
+}
+
+INPUT_OBJECT EngineeringTaskChangeWindowDetailsInput {
+  timeRange
+  reason
+}
+
+OBJECT EngineeringTaskContactDetails {
+  name
+  email
+  phoneNumber
+}
+
+INPUT_OBJECT EngineeringTaskContactDetailsInput {
+  name
+  email
+  phoneNumber
+}
+
+ENUM EngineeringTaskEnvironmentImpact { SINGLE_LOG_SOURCE, LESS_THAN_25_PCT, BETWEEN_25_50_PCT, MORE_THAN_50_PCT }
+
+ENUM EngineeringTaskIssueStart { LAST_HOUR, LAST_8_HOURS, LAST_24_HOURS, LAST_FEW_DAYS, ONGOING }
+
+ENUM EngineeringTaskIssueType { SILENT_LOG_SOURCE, INCORRECT_INGESTION, LOG_VOLUME_DISCREPANCY, OTHER }
+
+OBJECT EngineeringTaskMetadata {
+  engineeringTaskSubType
+  issue
+  environmentImpact
+  contactDetails
+  changeWindowRequired
+  changeWindowDetails
+  neededForCompliance
+  neededForComplianceDetails
+  retentionRequirements
+  retentionReason
+  requiredMetadata
+  requiredMetadataDetails
+  logSourceIntegrationDetails
+  businessCriticalLogSourceImpact
+  businessCriticalLogSourceImpactReason
+  issueStartedAt
+  troubleShootingStarted
+  troubleShootingDetails
+  recentLogSourceChanges
+  recentLogSourceChangeDetails
+  errorMessagesObserved
+  logSources
+  logSourceNotListed
+  supportTimeFrame
+}
+
+INPUT_OBJECT EngineeringTaskMetadataInput {
+  engineeringTaskSubType
+  issue
+  environmentImpact
+  contactDetails
+  changeWindowRequired
+  changeWindowDetails
+  neededForCompliance
+  neededForComplianceDetails
+  retentionRequirements
+  retentionReason
+  requiredMetadata
+  requiredMetadataDetails
+  logSourceIntegrationDetails
+  businessCriticalLogSourceImpact
+  businessCriticalLogSourceImpactReason
+  issueStartedAt
+  troubleShootingStarted
+  troubleShootingDetails
+  recentLogSourceChanges
+  recentLogSourceChangeDetails
+  errorMessagesObserved
+  errorMessageDetails
+  logSources
+  logSourceNotListed
+  supportTimeFrame
+}
+
+OBJECT EngineeringTaskRequiredMetadataDetails {
+  sourceIp
+  hash
+  logSourceName
+  url
+  filename
+}
+
+INPUT_OBJECT EngineeringTaskRequiredMetadataDetailsInput {
+  sourceIp
+  hash
+  logSourceName
+  url
+  filename
+}
+
+ENUM EngineeringTaskSubType { LOG_SOURCE_MODIFICATION, LOG_SOURCE_ONBOARDING_INTEGRATION, LOG_SOURCE_TROUBLESHOOTING, PARSING_REQUEST, OTHER }
+
+ENUM EngineeringTaskSupportTimeFrame { ASAP, THREE_DAYS, SEVEN_DAYS, THIRTY_DAYS, WHENEVER }
+
+ENUM FieldType { BOOLEAN, DATE, DATETIME, DOUBLE, INTEGER, STRING, IP_ADDRESS }
+
+
+OBJECT GeneratePasswordLinkResponse {
+  success
+  user
+  link
+}
+
+OBJECT GlobalDetection {
+  id
+  displaySlug
+  versionNumber
+  logic
+  detectionSource
+  sourceType
+  timeRange
+  suppressionExpression
+  macros
+  connector
+  detectionRule
+}
+
+OBJECT GreyMatterField {
+  id
+  type
+  name
+  displayName
+  serviceNowName
+  description
+}
+
+INPUT_OBJECT GreyMatterFieldBy {
+  id
+  name
+}
+
+OBJECT GreyMatterFieldConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT GreyMatterFieldEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT GreyMatterFieldFilter {
+  search
+  ids
+}
+
+INPUT_OBJECT GreyMatterFieldOrder {
+  orderBy
+  direction
+}
+
+ENUM GreyMatterFieldOrderBy { TYPE, NAME }
+
+ENUM GreyMatterFieldType { UNKNOWN, BOOLEAN, NUMBER, STRING, IP_ADDRESS, DATETIME }
+
+INPUT_OBJECT HealthIncidentFilter {
+  search
+  state
+  severity
+  assignees
+  notAssignees
+  unassigned
+  acknowledged
+  retained
+  ruleNumbers
+  created
+  updated
+  closed
+  escalated
+}
+
+
+
+INPUT_OBJECT IOCBy {
+  id
+  input
+}
+
+INPUT_OBJECT IOCInput {
+  name
+  type
+}
+
+ENUM IOCSeverity { LOW, MEDIUM, HIGH, CRITICAL, INFORMATIONAL, UNASSESSED }
+
+ENUM IOCType { DOMAIN, IP_ADDRESS, HASH, URL, CIDR }
+
+OBJECT Identity {
+  id
+  name
+  role
+  group
+  workLocation
+  createdAt
+}
+
+OBJECT IdentityConnection {
+  edges
+  pageInfo
+  totalCount
+}
+
+OBJECT IdentityEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT IdentityFilter {
+  search
+  roles
+  groups
+  workLocations
+  created
+}
+
+INPUT_OBJECT IdentityOrder {
+  orderBy
+  direction
+}
+
+ENUM IdentityOrderBy { NAME, ROLE, GROUP, WORKLOCATION }
+
+OBJECT Incident {
+  id
+  ticketNumber
+  description
+  rule
+  state
+  severity
+  type
+  category
+  subCategory
+  retained
+  metadata
+  createdAt
+  updatedAt
+  removedAt
+  originatorUpdatedAt
+  originatorCreatedAt
+  closeCode
+  closeNote
+  closedAt
+  escalatedAt
+  originator
+  allArtifacts
+  acknowledgement
+  comments
+  assignee
+  title
+  summary
+  customer
+  queryBatches
+  searchHistory
+  logSourceType
+  activity
+  internalOnly
+  unresolveReason
+  firstEscalatedAt
+  lastEscalatedAt
+  remediatedAt
+  resolvedAt
+  acknowledgedAt
+  containedAt
+  detectedAt
+  investigationCompletedAt
+  timeToRemediate
+  timeToResolve
+  timeToAcknowledge
+  timeToContain
+  timeToDetect
+  timeToInvestigate
+  timeToFirstEscalation
+}
+
+OBJECT IncidentAcknowledgement {
+  acknowledgementMethod
+  user
+  createdAt
+}
+
+INPUT_OBJECT IncidentAcknowledgementInput {
+  incidentId
+  acknowledgementMethod
+}
+
+ENUM IncidentAcknowledgementMethod { MOBILE_APP, SNOW, WEB_UI, ACTION_TOKEN, API, GREYMATTER_WORKFLOW }
+
+ENUM IncidentActionType { ACKNOWLEDGE, ASSIGN, CLOSE }
+
+OBJECT IncidentActivityLogConnection {
+  edges
+  pageInfo
+}
+
+OBJECT IncidentActivityLogEdge {
+  cursor
+  node
+}
+
+OBJECT IncidentActivityLogEntry {
+  customer
+  type
+  field
+  fieldValueOld
+  fieldValueNew
+  createdAt
+  createdBy
+}
+
+INPUT_OBJECT IncidentActivityLogFilter {
+  created
+  types
+}
+
+INPUT_OBJECT IncidentActivityLogOrder {
+  orderByList
+  direction
+}
+
+ENUM IncidentActivityLogOrderBy { TYPE, FIELD, FIELD_VALUE_OLD, FIELD_VALUE_NEW, CREATED_AT, CREATED_BY }
+
+ENUM IncidentActivityLogType { CREATED, UPDATED }
+
+INPUT_OBJECT IncidentBy {
+  id
+  ticketNumber
+}
+
+ENUM IncidentCloseCode { CUSTOMER_ANOMALOUS_SAFE, CUSTOMER_TRUE_POSITIVE, CUSTOMER_TRUE_POSITIVE_SUSPICIOUS, CUSTOMER_NO_RESPONSE_RECEIVED, CUSTOMER_ESCALATED_AS_INTERNAL_INCIDENT, CUSTOMER_NO_RESPONSE_AUTO_CLOSE, CUSTOMER_NOT_APPLICABLE, CUSTOMER_RECOMMENDATION_APPROVED_AND_RQ_ACTION_NEEDED, CUSTOMER_RECOMMENDATION_CUSTOMER_IMPLEMENTED, CUSTOMER_RECOMMENDATION_DECLINED, CUSTOMER_SECURITY_CONTROL_TESTING, CUSTOMER_FALSE_POSITIVE, CUSTOMER_CANCELLED, FALSE_POSITIVE_CREATE_TUNING_TICKET }
+
+OBJECT IncidentComment {
+  createdAt
+  createdBy
+  text
+  type
+}
+
+OBJECT IncidentCommentConnection {
+  edges
+  pageInfo
+}
+
+OBJECT IncidentCommentEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT IncidentCommentFilter {
+  earliestCreate
+  latestCreate
+  types
+}
+
+INPUT_OBJECT IncidentCommentInput {
+  incidentId
+  comment
+}
+
+INPUT_OBJECT IncidentCommentOrder {
+  orderBy
+  direction
+}
+
+ENUM IncidentCommentOrderBy { CREATED_AT, CREATED_BY, TYPE }
+
+ENUM IncidentCommentType { PUBLIC }
+
+OBJECT IncidentConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT IncidentEDRMetadata {
+  type
+  integration
+  duplicatedIncident
+  sourceTechnology
+}
+
+OBJECT IncidentEdge {
+  cursor
+  node
+}
+
+OBJECT IncidentEngineeringMetadata {
+  type
+  integration
+  duplicatedIncident
+  sourceTechnology
+}
+
+INPUT_OBJECT IncidentFilter {
+  search
+  state
+  severity
+  incidentTypes
+  assignees
+  notAssignees
+  unassigned
+  acknowledged
+  retained
+  ruleNumbers
+  created
+  updated
+  closed
+  escalated
+  internalOnly
+  memories
+  ticketNumber
+  commentFilter
+}
+
+OBJECT IncidentHealthMetadata {
+  type
+  integration
+  duplicatedIncident
+  sourceTechnology
+}
+
+INTERFACE IncidentMetadata {
+  type
+}
+
+ENUM IncidentMetadataType { SIEM, EDR, ENGINEERING, HEALTH, PHISHING_ANALYZER }
+
+INPUT_OBJECT IncidentOrder {
+  orderBy
+  direction
+}
+
+ENUM IncidentOrderBy { CREATED_AT, SEVERITY, STATE, CLOSED_AT, ESCALATED_AT }
+
+ENUM IncidentOriginator { SERVICENOW, DEMO, UNKNOWN }
+
+OBJECT IncidentResponse {
+  success
+  incident
+}
+
+OBJECT IncidentRule {
+  id
+  name
+  version
+}
+
+OBJECT IncidentSIEMMetadata {
+  type
+  integration
+  duplicatedIncident
+  sourceTechnology
+}
+
+ENUM IncidentSeverity { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL, UNASSESSED }
+
+ENUM IncidentState { NEW, IN_PROGRESS, ON_HOLD, RESOLVED, CANCELLED, PENDING_CUSTOMER, PENDING_RQ, PENDING_VENDOR, CLOSED, UNKNOWN }
+
+ENUM IncidentType { DRP, EDR, SIEM, ENGINEERING, HEALTH, PHISHING_ANALYZER }
+
+OBJECT Indicator {
+  id
+  description
+  name
+  type
+  feedNames
+  severity
+  firstSeenAt
+  lastSeenAt
+  region
+  country
+  city
+  reliabilityScore
+  countScore
+  threatScore
+}
+
+OBJECT IndicatorConnection {
+  edges
+  pageInfo
+  totalCount
+}
+
+OBJECT IndicatorEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT IndicatorFilter {
+  lastSeenAt
+  type
+  severity
+  names
+  feedNames
+}
+
+INPUT_OBJECT IndicatorOrder {
+  orderBy
+  direction
+}
+
+ENUM IndicatorOrderBy { LAST_SEEN }
+
+OBJECT InetAddress {
+  hostName
+  canonicalHostName
+  hostAddress
+}
+
+
+OBJECT Integration {
+  id
+  name
+  connectionStatus
+  connector
+  enabled
+  lastUsed
+  lastConnectionTest
+  sharedBy
+  activity
+}
+
+OBJECT IntegrationActivityLogConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT IntegrationActivityLogEdge {
+  cursor
+  node
+}
+
+OBJECT IntegrationActivityLogEntry {
+  id
+  type
+  field
+  fieldChange
+  createdAt
+  createdBy
+  changeGroupUuid
+}
+
+INPUT_OBJECT IntegrationActivityLogFilter {
+  created
+  types
+}
+
+INPUT_OBJECT IntegrationActivityLogOrder {
+  orderBy
+  direction
+}
+
+ENUM IntegrationActivityLogOrderBy { CREATED_AT }
+
+ENUM IntegrationActivityLogType { CREATED, UPDATED, ENABLED, DISABLED, CONFIGURATION_CHANGED, DELETED }
+
+OBJECT IntegrationConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT IntegrationEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT IntegrationFilter {
+  search
+  connectorNames
+  connectorTypes
+  enabled
+  connectionStatus
+  ids
+}
+
+INPUT_OBJECT IntegrationOrder {
+  orderBy
+  direction
+}
+
+ENUM IntegrationOrderBy { CREATED_AT, UPDATED_AT, UUID, NAME, CONNECTOR_NAME, CONNECTOR_TYPE, ENABLED, LAST_CONNECTION_TEST }
+
+INPUT_OBJECT ListCondition {
+  column
+  values
+  caseInsensitive
+}
+
+ENUM ListConditionOperator { AND, OR }
+
+
+OBJECT LogSourceIntegrationDetails {
+  hostname
+  ipAddress
+  serviceAccount
+  additionalInformation
+}
+
+INPUT_OBJECT LogSourceIntegrationDetailsInput {
+  hostname
+  ipAddress
+  serviceAccount
+  additionalInformation
+}
+
+
+ENUM MarketplaceSellerContactMethodProtocol { OTHER, EMAIL, XMPP, ICQ, AOL }
+
+OBJECT MitreTacticTechniques {
+  id
+  name
+  techniques
+}
+
+OBJECT MitreTechnique {
+  id
+  name
+}
+
+OBJECT Mutation {
+  createAccessGroup
+  updateAccessGroup
+  deleteAccessGroup
+  createPod
+  updatePod
+  deletePod
+  createRole
+  updateRole
+  deleteRole
+  createApiKey
+  deleteApiKeys
+  deleteApiKeyById
+  deleteAsset
+  createCase
+  updateCase
+  updateCaseOwner
+  updateCaseDueDate
+  closeCase
+  cancelCase
+  addCaseComment
+  addChildrenToCase
+  removeChildFromCase
+  createActivityLogEntryComment
+  assignDiscoverTask
+  updateDiscoverTaskState
+  closeDiscoverTask
+  assignDRPAlert
+  assignDRPAlerts
+  unassignDRPAlert
+  unassignDRPAlerts
+  watchDRPAlert
+  watchDRPAlerts
+  unWatchDRPAlert
+  unWatchDRPAlerts
+  addDrpAlertComment
+  bulkAddDrpAlertComment
+  updateDrpAlertComment
+  deleteDrpAlertComment
+  updateDrpAlertState
+  bulkUpdateDrpAlertState
+  bulkCloseDrpAlerts
+  createAccessControlPolicy
+  updateAccessControlPolicy
+  updateAccessControlPolicies
+  deleteAccessControlPolicy
+  createEmergencyContact
+  updateEmergencyContact
+  updateCallOrder
+  deleteEmergencyContact
+  acknowledgeIncident
+  assignIncident
+  updateIncidentState
+  closeIncident
+  acknowledgeAssignAndCloseIncident
+  addIncidentComment
+  unresolveIncident
+  retainIncident
+  releaseIncident
+  bulkCloseIncidents
+  runPlaybook
+  rerunAllFailedTasksForPlaybookRun
+  upsertPlaybookMetadata
+  upsertCustomerPlaybook
+  createReferenceList
+  updateReferenceList
+  deleteReferenceList
+  createReferenceListColumn
+  updateReferenceListColumn
+  deleteReferenceListColumn
+  createReferenceListRow
+  updateReferenceListRow
+  deleteReferenceListRow
+  createTask
+  assignTask
+  addTaskComment
+  acknowledgeTask
+  updateTaskState
+  resolveTask
+  updateTaskRetainedStatus
+  unresolveTask
+  bulkResolveTasks
+  createUser
+  updateUser
+  deleteUser
+  disableUser
+  enableUser
+  resendInvite
+  resetMfa
+  sendForgotPassword
+  generatePasswordLink
+}
+
+OBJECT NewCustomerDetectionDeployedActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  newDeployedLogic
+  testingStatus
+  testingDate
+  testSearchWindow
+  testAlertsVolume
+  bulkJobOpt
+  isEmergency
+  isIneligible
+}
+
+OBJECT NewCustomerDetectionRequestActivityLogEntry {
+  id
+  customer
+  customerDetection
+  draftCustomerDetection
+  activityLogType
+  text
+  comments
+  createdAt
+  createdBy
+  newDeployedLogic
+  testingStatus
+  testingDate
+  testSearchWindow
+  testAlertsVolume
+  bulkJobOpt
+  isEmergency
+}
+
+INTERFACE Node {
+  id
+}
+
+OBJECT PageInfo {
+  startCursor
+  endCursor
+  hasPreviousPage
+  hasNextPage
+}
+
+OBJECT Permission {
+  name
+  displayName
+  description
+  groups
+}
+
+
+OBJECT Playbook {
+  id
+  action
+  fieldDefinitions
+  metadata
+  supportedTechnologies
+}
+
+INPUT_OBJECT PlaybookInput {
+  integrationIds
+  playbookVariables
+}
+
+OBJECT PlaybookMetadata {
+  enabled
+  name
+  description
+  type
+}
+
+OBJECT PlaybookResponse {
+  success
+  playbook
+}
+
+OBJECT PlaybookRun {
+  id
+  playbookAction
+  customer
+  reason
+  playbookName
+  playbookType
+  rqAllowedToRun
+  type
+  status
+  trigger
+  platform
+  executionResult
+  createdAt
+  createdBy
+  updatedAt
+  updatedBy
+  ticketNumber
+  drpAlertShortCode
+  tempRuleId
+}
+
+OBJECT PlaybookRunActionExecution {
+  id
+  field
+  value
+  outputMessage
+  outputErrorMessage
+  integration
+  actionExecutionStatus
+}
+
+OBJECT PlaybookRunConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT PlaybookRunEdge {
+  cursor
+  node
+}
+
+OBJECT PlaybookRunExecution {
+  actionExecutions
+  startTime
+  endTime
+  lastRetriedTime
+}
+
+INPUT_OBJECT PlaybookRunFilter {
+  search
+  playbookTypes
+  playbookNames
+  playbookActions
+  statuses
+  types
+  platforms
+  triggers
+  users
+  ticketNumbers
+  drpAlertShortCodes
+  tempRuleIds
+  created
+}
+
+OBJECT PlaybookRunFilterData {
+  users
+  ticketNumbers
+  drpAlertShortCodes
+  tempRuleIds
+}
+
+INPUT_OBJECT PlaybookRunOrder {
+  orderBy
+  direction
+}
+
+ENUM PlaybookRunOrderBy { CREATED_AT, PLAYBOOK_NAME, PLAYBOOK_TYPE, TYPE, STATUS }
+
+ENUM PlaybookRunPlatformType { MOBILE, WEB }
+
+OBJECT PlaybookRunResponse {
+  success
+  playbookRun
+}
+
+ENUM PlaybookRunStatus { RUNNING, PARTIAL, FAILED, SUCCESS, NOT_FOUND }
+
+ENUM PlaybookRunTriggerType { AUTOMATION, RQ_USER, CUSTOMER }
+
+ENUM PlaybookRunType { DYNAMIC_TECH_ACTION, GENERIC }
+
+ENUM PlaybookType { CONTAINMENT, REMEDIATION, ENRICHMENT, REVERSAL, OTHER }
+
+INPUT_OBJECT PlaybookVariable {
+  field
+  values
+}
+
+OBJECT Pod {
+  id
+  name
+  description
+  accessGroups
+  customers
+  users
+  createdAt
+  updatedAt
+}
+
+OBJECT PodConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT PodEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT PodFilter {
+  name
+  ids
+  users
+  accessGroups
+  roles
+  customers
+}
+
+INPUT_OBJECT PodOrder {
+  orderBy
+  direction
+}
+
+ENUM PodOrderBy { NAME }
+
+OBJECT Query {
+  node
+  accessGroups
+  accessGroup
+  role
+  pod
+  pods
+  roles
+  permissions
+  apiKeys
+  assets
+  identities
+  cases
+  case
+  rateLimit
+  customer
+  customers
+  timeBuckets
+  dataSourceSchema
+  detectionRules
+  customerDetection
+  draftCustomerDetection
+  customerDetections
+  customerDetectionActivityLogEntries
+  customerDetectionActivityLogEntry
+  discoverTasks
+  discoverTask
+  drpAlerts
+  drpAlert
+  accessControlPolicy
+  accessControlPolicies
+  accessControlResources
+  emergencyContacts
+  emergencyContact
+  greymatterField
+  greymatterFields
+  incidents
+  healthIncidents
+  incident
+  indicator
+  indicators
+  integrations
+  integration
+  playbookRun
+  playbookRuns
+  playbookRunFilterData
+  recommendedPlaybooks
+  playbooks
+  customerPlaybooks
+  searchHistory
+  referenceList
+  referenceLists
+  task
+  tasks
+  me
+  user
+  audits
+}
+
+OBJECT QueryBatch {
+  id
+  name
+  type
+  statistics
+  state
+  query
+  integrations
+}
+
+OBJECT QueryBatchConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT QueryBatchEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT QueryBatchFilter {
+  includeArchived
+}
+
+INPUT_OBJECT QueryBatchOrder {
+  orderBy
+  direction
+}
+
+ENUM QueryBatchOrderBy { CREATED_AT }
+
+INPUT_OBJECT QueryBatchSearchBy {
+  incidentId
+}
+
+ENUM QueryBatchState { CREATED, PAUSED, STOPPED, RUNNING, WAITING, PARTIAL, DONE, FAILED, CANCELLED, EVENT_COUNT_LIMIT_EXCEEDED }
+
+OBJECT QueryBatchStatistics {
+  percentComplete
+  eventCount
+  estimatedTaskCount
+  succeededTaskCount
+  failedTaskCount
+  runningTaskCount
+}
+
+ENUM QueryBatchType { INCIDENT, HUNT, PRE_PLAYBOOK, POST_PLAYBOOK, PREVIEW, ADHOC_PLAYBOOK, ADHOC_SEARCH, VERIFY }
+
+ENUM RQAllowedToRun { APPROVED, CONDITIONAL, DENIED, UNKNOWN }
+
+OBJECT RecommendedPlaybook {
+  playbook
+  fields
+}
+
+INPUT_OBJECT RecommendedPlaybookFilter {
+  tempRuleId
+  artifacts
+}
+
+OBJECT RecommendedPlaybooks {
+  playbooks
+}
+
+OBJECT ReferenceList {
+  id
+  name
+  description
+  queryReference
+  dataTagging
+  isBuiltIn
+  columns
+  rows
+  createdAt
+  createdBy
+  updatedAt
+  updatedBy
+}
+
+OBJECT ReferenceListColumn {
+  id
+  name
+  description
+  type
+  linkedFields
+  createdAt
+  createdBy
+  updatedAt
+  updatedBy
+}
+
+OBJECT ReferenceListColumnResponse {
+  success
+  column
+}
+
+INPUT_OBJECT ReferenceListColumnSelector {
+  columns
+  linkedFields
+}
+
+ENUM ReferenceListColumnValueType { STRING, BOOLEAN }
+
+OBJECT ReferenceListConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT ReferenceListEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT ReferenceListFilter {
+  search
+  queryReference
+  dataTagging
+}
+
+OBJECT ReferenceListLinkedGreyMatterField {
+  id
+  linkedField
+  createdAt
+  createdBy
+  updatedAt
+  updatedBy
+}
+
+INPUT_OBJECT ReferenceListOrder {
+  orderBy
+  direction
+}
+
+ENUM ReferenceListOrderBy { NAME, DESCRIPTION, CREATED_AT, UPDATED_AT }
+
+OBJECT ReferenceListResponse {
+  success
+  referenceList
+}
+
+OBJECT ReferenceListRow {
+  id
+  values
+  updatedAt
+}
+
+OBJECT ReferenceListRowConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT ReferenceListRowEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT ReferenceListRowFilter {
+  search
+  operator
+  listConditions
+}
+
+INPUT_OBJECT ReferenceListRowOrder {
+  orderBy
+  direction
+}
+
+ENUM ReferenceListRowOrderBy { CREATED_AT, UPDATED_AT }
+
+OBJECT ReferenceListRowResponse {
+  success
+  row
+}
+
+INPUT_OBJECT ReferenceListRowValueInput {
+  column
+  value
+}
+
+OBJECT ReferenceListValue {
+  id
+  column
+  value
+  updatedAt
+}
+
+INPUT_OBJECT RemoveChildFromCaseInput {
+  caseId
+  child
+}
+
+INPUT_OBJECT ResolveTaskInput {
+  taskId
+  closeNote
+  closeCode
+}
+
+INTERFACE Response {
+  success
+}
+
+OBJECT Role {
+  id
+  name
+  description
+  type
+  accessGroups
+  users
+  permissions
+  createdAt
+  updatedAt
+}
+
+OBJECT RoleConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT RoleEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT RoleFilter {
+  name
+  ids
+  users
+  accessGroups
+  pods
+  customers
+}
+
+INPUT_OBJECT RoleOrder {
+  orderBy
+  direction
+}
+
+ENUM RoleOrderBy { NAME }
+
+INPUT_OBJECT RunPlaybookInput {
+  playbookAction
+  reason
+  originatorId
+  input
+  platform
+  ticketNumber
+  drpAlertShortCode
+  tempRuleId
+  aiChatId
+}
+
+OBJECT SearchLightPagination {
+  size
+  offset
+}
+
+OBJECT SecureSocketInspectionPrimary {
+  inspectionId
+  host
+  port
+  protocol
+  cipherSuite
+  handshakeSuccessful
+  inspectedAt
+}
+
+ENUM Severity { MEDIUM, HIGH, CRITICAL, LOW }
+
+ENUM Sort { ASC, DESC }
+
+
+OBJECT StringChanged {
+  oldValue
+  newValue
+}
+
+OBJECT StringListChanged {
+  oldValue
+  newValue
+}
+
+OBJECT Takedown {
+  id
+  state
+}
+
+ENUM TakedownState { AVAILABLE, UNAVAILABLE, SUBMITTED, IN_REVIEW, IN_PROGRESS, COMPLETED, CLARIFICATION_REQUIRED, CLARIFICATION_PROVIDED, TERMINATED, NOT_ENFORCEABLE, NO_ACTION_REQUIRED, REJECTED, UNKNOWN }
+
+OBJECT Task {
+  id
+  slug
+  externalId
+  customer
+  assignee
+  type
+  metadata
+  title
+  description
+  priority
+  acknowledgement
+  state
+  createdAt
+  createdBy
+  updatedAt
+  updatedBy
+  comments
+  closeNote
+  closeCode
+  closedAt
+  retained
+  serviceNowCategory
+  serviceNowSubCategory
+  activity
+}
+
+OBJECT TaskAcknowledgement {
+  actionMethod
+  user
+  createdAt
+}
+
+ENUM TaskActionMethod { MOBILE_APP, SNOW, WEB_UI, ACTION_TOKEN, API }
+
+OBJECT TaskActivityLogConnection {
+  edges
+  pageInfo
+}
+
+OBJECT TaskActivityLogEdge {
+  cursor
+  node
+}
+
+INTERFACE TaskActivityLogEntry {
+  id
+  customer
+  task
+  type
+  createdAt
+  createdBy
+}
+
+INPUT_OBJECT TaskActivityLogFilter {
+  created
+  types
+}
+
+INPUT_OBJECT TaskActivityLogOrder {
+  orderByList
+  direction
+}
+
+ENUM TaskActivityLogOrderBy { TYPE, CREATED_AT, CREATED_BY }
+
+ENUM TaskActivityLogType { CREATED, UPDATED }
+
+INPUT_OBJECT TaskBy {
+  id
+  slug
+  externalId
+}
+
+ENUM TaskCloseCode { RESOLVED, CANCELLED, DUPLICATE }
+
+OBJECT TaskComment {
+  id
+  createdAt
+  createdBy
+  text
+  type
+}
+
+OBJECT TaskCommentConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT TaskCommentEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT TaskCommentFilter {
+  created
+  types
+}
+
+INPUT_OBJECT TaskCommentInput {
+  taskId
+  comment
+}
+
+INPUT_OBJECT TaskCommentOrder {
+  orderBy
+  direction
+}
+
+ENUM TaskCommentOrderBy { CREATED_AT }
+
+ENUM TaskCommentType { PUBLIC }
+
+OBJECT TaskConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT TaskEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT TaskFilter {
+  assignees
+  notAssignees
+  unassigned
+  acknowledged
+  priorities
+  states
+  types
+  created
+  updated
+  closed
+  search
+  serviceNowCategories
+}
+
+
+OBJECT TaskMetadataChanged {
+  oldValue
+  newValue
+}
+
+INPUT_OBJECT TaskMetadataInput {
+  engineeringMetadata
+}
+
+INPUT_OBJECT TaskOrder {
+  orderBy
+  direction
+}
+
+ENUM TaskOrderBy { CREATED_AT, UPDATED_AT, UUID, TITLE, TASK_TYPE, PRIORITY, STATE, CLOSED_AT }
+
+ENUM TaskPriority { CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL }
+
+OBJECT TaskPriorityChanged {
+  oldValue
+  newValue
+}
+
+OBJECT TaskResponse {
+  success
+  task
+}
+
+ENUM TaskServiceNowCategory { ENGINEERING, INQUIRY_HELP, VISIBILITY, CONTENT, INVESTIGATION, DETECTION, PRODUCT_ADMINISTRATION, CUSTOMER_REQUEST, IMPLEMENTATION, PLATFORM_HEALTH, OTHER }
+
+ENUM TaskState { NEW, IN_PROGRESS, ON_HOLD, RESOLVED, CANCELLED, PENDING_CUSTOMER, PENDING_RQ, PENDING_VENDOR, CLOSED }
+
+OBJECT TaskStateChanged {
+  oldValue
+  newValue
+}
+
+ENUM TaskType { GENERAL, ENGINEERING, TEAMMATE, TEAMMATE_ACTION, DETECT_TUNING }
+
+OBJECT TaskTypeChanged {
+  oldValue
+  newValue
+}
+
+ENUM TechAction { ADD_DOMAIN_TO_LIST, ADD_IP_TO_LIST, ADD_URL_TO_LIST, ALLOW_DOMAIN, ALLOW_EMAIL_ADDRESS, ALLOW_HASH, ALLOW_IP, ALLOW_URL, ANALYZE_FILE, BAN_HASH, BLOCK_DOMAIN, BLOCK_EMAIL_ADDRESS, BLOCK_EMAIL_DOMAIN, BLOCK_IP, BLOCK_PORT, BLOCK_URL, CREATE_LIST, DELETE_FILE, DELETE_FILE_BY_HASH, DELETE_FILE_BY_DEVICE_ID, DISABLE_MFA, DISABLE_SERVICE_ACCOUNT, DISABLE_USER, DRILLDOWN, ENABLE_USER, ENRICH_ALERT, ENRICH_DEVICE, ENRICH_DOMAIN, ENRICH_DOMAIN_CONTROLLER, ENRICH_EMAIL, ENRICH_FIELDS, ENRICH_HASH, ENRICH_HOST, ENRICH_IP, ENRICH_LIST, ENRICH_POLICY, ENRICH_SOURCES, ENRICH_URL, ENRICH_USER, ENRICH_VULNERABILITY, ENROLL_MFA, PERFORM_QUERY, FETCH_ASSETS, FETCH_IDENTITIES, PERFORM_GM_DETECT_QUERY, GENERATE_NATIVE_QUERY, INITIATE_FILE_SCAN, INITIATE_HOST_SCAN, INITIATE_IP_SCAN, INITIATE_VULNERABILITY_SCAN, ISOLATE_HOST, GET_DETECTION_RECORDS, ISOLATE_HOST_BY_IP, ISOLATE_HOST_BY_MAC, QUARANTINE_FILE, REMOVE_DOMAIN_FROM_LIST, REMOVE_IP_FROM_LIST, REMOVE_URL_FROM_LIST, RESET_MFA, RESET_PASSWORD, RESTORE_EMAIL, SCAN_RESULTS, SET_PASSWORD, TEST_CONNECTION, TERMINATE_PROCESS, TERMINATE_SESSIONS, UNALLOW_DOMAIN, UNALLOW_EMAIL_ADDRESS, UNALLOW_HASH, UNALLOW_IP, UNALLOW_URL, UNBAN_HASH, UNBLOCK_DOMAIN, UNBLOCK_EMAIL_ADDRESS, UNBLOCK_EMAIL_DOMAIN, UNBLOCK_IP, UNBLOCK_PORT, UNBLOCK_URL, UNISOLATE_HOST, UNISOLATE_HOST_BY_IP, UNISOLATE_HOST_BY_MAC, UNQUARANTINE_FILE, UPDATE_DETECTIONS, SOFT_DELETE_EMAIL, UPSERT_RULES, GET_RULES, DELETE_RULES, HARD_DELETE_EMAIL, DELETE_EMAIL_ATTACHMENT, REMOTE_RESTART, REMOTE_LOCK, SHUTDOWN_HOST, DELETE_INBOX_RULE, REMOVE_MFA_AUTH_METHODS, REMOVE_ALL_AUTH_METHODS }
+
+ENUM TechnologyType { SIEM, EDR, FIREWALL, ANTIVIRUS, VULNERABILITY_SCANNER, VULNERABILITY_MANAGEMENT, EMAIL_SECURITY, CLOUD, SOAR, IDS_IPS, OSINT, XDR, EDL_LIST, FILE_INTEGRITY_MONITORING, MALWARE_SEARCH, SANDBOXING, DATA_LAKE, DNS, UBA, FILE_TRANSFER_OR_STORAGE, VIRTUALIZATION, CASB, THREAT_INTELLIGENCE, OPERATIONAL_TECHNOLOGY }
+
+ENUM TemporalUnit { MONTHS, DAYS, HOURS, MINUTES, SECONDS }
+
+OBJECT TimeBucketResponse {
+  unit
+  buckets
+}
+
+OBJECT TimeBucketValue {
+  startTime
+  endTime
+  count
+}
+
+INPUT_OBJECT TimeBucketsFilter {
+  by
+  query
+  startTime
+  endTime
+}
+
+INPUT_OBJECT TimeRange {
+  earliest
+  latest
+}
+
+INPUT_OBJECT UnresolveIncidentInput {
+  incidentId
+  reason
+}
+
+INPUT_OBJECT UnresolveTaskInput {
+  taskId
+}
+
+ENUM UpdatableIncidentState { NEW, IN_PROGRESS, ON_HOLD, CANCELLED, PENDING_CUSTOMER, PENDING_RQ, PENDING_VENDOR }
+
+INPUT_OBJECT UpdateAccessControlPoliciesInput {
+  accessControlPolicyIds
+  accessGroups
+  users
+}
+
+INPUT_OBJECT UpdateAccessControlPolicyInput {
+  id
+  name
+  description
+  accessGroups
+  users
+}
+
+INPUT_OBJECT UpdateAccessGroupInput {
+  id
+  name
+  description
+  ssoGroups
+  users
+  pods
+  roles
+  isDefault
+}
+
+OBJECT UpdateAccessGroupResponse {
+  success
+  accessGroup
+}
+
+INPUT_OBJECT UpdateAssociationInput {
+  replace
+  remove
+  add
+  addAll
+  removeAll
+}
+
+OBJECT UpdateCallOrderResponse {
+  emergencyContacts
+  success
+}
+
+INPUT_OBJECT UpdateCaseDueDateInput {
+  caseId
+  dueAt
+}
+
+INPUT_OBJECT UpdateCaseInput {
+  caseId
+  title
+  description
+  aiSummary
+  state
+  severity
+  expirationDate
+  subType
+}
+
+INPUT_OBJECT UpdateCaseOwnerInput {
+  caseId
+  owner
+}
+
+INPUT_OBJECT UpdateDiscoverTaskStateInput {
+  discoverTaskId
+  state
+}
+
+INPUT_OBJECT UpdateDrpAlertStateInput {
+  drpAlert
+  state
+  comment
+}
+
+INPUT_OBJECT UpdateEmergencyContactInput {
+  id
+  phoneNumber
+  callAttempts
+  callCategories
+  callWindows
+}
+
+OBJECT UpdateEmergencyContactResponse {
+  emergencyContact
+  success
+}
+
+INPUT_OBJECT UpdateIncidentStateInput {
+  incidentId
+  state
+  comment
+}
+
+INPUT_OBJECT UpdatePodInput {
+  id
+  name
+  description
+  customers
+  accessGroups
+}
+
+OBJECT UpdatePodResponse {
+  success
+  pod
+}
+
+INPUT_OBJECT UpdateReferenceListColumnInput {
+  id
+  name
+  description
+  linkedFields
+}
+
+INPUT_OBJECT UpdateReferenceListInput {
+  id
+  name
+  description
+  queryReference
+  dataTagging
+}
+
+INPUT_OBJECT UpdateReferenceListLinkedGreyMatterFieldInput {
+  replace
+  remove
+  add
+}
+
+INPUT_OBJECT UpdateReferenceListRowInput {
+  id
+  values
+}
+
+INPUT_OBJECT UpdateRoleInput {
+  id
+  name
+  description
+  accessGroups
+  permissions
+}
+
+OBJECT UpdateRoleResponse {
+  success
+  role
+}
+
+INPUT_OBJECT UpdateStringAssociationInput {
+  replace
+  remove
+  add
+  addAll
+  removeAll
+}
+
+INPUT_OBJECT UpdateTaskRetainedStatusInput {
+  taskId
+  retained
+}
+
+INPUT_OBJECT UpdateTaskStateInput {
+  taskId
+  newState
+}
+
+INPUT_OBJECT UpdateUserInput {
+  id
+  fullName
+  email
+  jobTitle
+  hasAccessUntil
+  accessGroups
+}
+
+OBJECT UpdatedTaskActivityLogEntry {
+  id
+  customer
+  task
+  type
+  createdAt
+  createdBy
+  assignee
+  metadata
+  title
+  description
+  priority
+  taskType
+  state
+  closeNote
+  closedAt
+  serviceNowCategory
+  serviceNowSubCategory
+}
+
+INPUT_OBJECT UpsertCustomerPlaybookInput {
+  id
+  rqAllowedToRun
+  note
+}
+
+INPUT_OBJECT UpsertPlaybookMetadataInput {
+  id
+  enabled
+  name
+  description
+  type
+}
+
+OBJECT UqliField {
+  field
+  aggregation
+}
+
+OBJECT UqliFieldAggregation {
+  type
+  alias
+  distinct
+  arguments
+}
+
+
+OBJECT UqliQuery {
+  columns
+  fields
+  uqliFilter
+  earliest
+  latest
+  groupBy
+  orderBy
+  having
+}
+
+OBJECT User {
+  id
+  fullName
+  email
+  serviceNowId
+  accessGroups
+  pods
+  roles
+}
+
+OBJECT UserChanged {
+  oldValue
+  newValue
+}
+
+OBJECT UserConnection {
+  totalCount
+  edges
+  pageInfo
+}
+
+OBJECT UserEdge {
+  cursor
+  node
+}
+
+INPUT_OBJECT UserFilter {
+  name
+  status
+  ids
+  accessGroups
+  roles
+  pods
+  customers
+}
+
+OBJECT UserOperationResponse {
+  success
+  user
+}
+
+INPUT_OBJECT UserOrder {
+  orderBy
+  direction
+}
+
+ENUM UserOrderBy { NAME }
+
+ENUM UserStatus { ACTIVE, DISABLED, LOCKED, INVITED, EXPIRED }
+
+ENUM UserType { STANDARD, API }
