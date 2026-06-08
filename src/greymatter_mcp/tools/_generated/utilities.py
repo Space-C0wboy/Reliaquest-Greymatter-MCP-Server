@@ -27,7 +27,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
     ) -> Any:
         return await execute_operation(_DOC["node"], {"id": id}, customer_slug=customer_slug)
 
-    @mcp.tool(name="rate_limit", description="Utilities \u00b7 query rateLimit. Example variables: {}")
+    @mcp.tool(name="rate_limit", description="Return current GreyMatter API rate-limit usage (limit is 5000 points/hour per company account). Example variables: {}")
     async def rate_limit(
         customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
     ) -> Any:
