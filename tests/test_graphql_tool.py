@@ -39,6 +39,20 @@ def test_multiple_fragments_then_mutation():
     assert is_mutation_document(doc) is True
 
 
+def test_trailing_mutation_in_multi_operation_document_is_detected():
+    assert is_mutation_document("query a { x } mutation b { y }")
+
+
+def test_multiple_query_operations_are_not_a_mutation():
+    assert not is_mutation_document("query a { x } query b { y }")
+
+
+def test_fragment_then_query_then_mutation_is_detected():
+    assert is_mutation_document(
+        "fragment f on T { x } query a { ...f } mutation b { y }"
+    )
+
+
 async def _get_tool_fn(read_only: bool):
     mcp = FastMCP(name="t")
     gql_tool.register(mcp, read_only=read_only)

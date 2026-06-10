@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.1.5] - 2026-06-10
+### Fixed
+- Mutations are no longer retried. `GreyMatterClient.execute` gained a `retryable`
+  flag; `execute_operation` sets it to `False` for mutation documents so a mutation
+  whose response is lost (timeout/gateway 5xx) is never re-sent — preventing
+  duplicate comments, API keys, and playbook runs.
+- Corrected order-by variables mistyped as `RoleFilter` to `RoleOrder` across the
+  generated documents (and their parameter descriptions), so servers that enforce
+  variable-usage validation accept the affected queries. The fix is mirrored in the
+  generator so regeneration preserves it.
+### Security
+- `is_mutation_document` now scans every operation in a document instead of stopping
+  at the first, so a trailing mutation in a multi-operation document
+  (`query a { x } mutation b { y }`) can no longer slip past read-only mode.
+- The collection generator (`scripts/generate_from_collection.py`) confines a
+  command-line collection path to the working-tree root, resolving symlinks before
+  the check, so it cannot be pointed at arbitrary files outside the project
+  (CWE-23 path traversal).
+### Changed
+- `LOG_LEVEL` is validated against the standard logging level names and fails fast
+  with a `ConfigError` on a typo.
+- Best-effort client shutdown now swallows any exception (not just `RuntimeError`)
+  since `aclose()` on a closed event loop can raise anyio errors.
+- The release workflow verifies the pushed `v*` tag matches the `pyproject` version
+  before building.
+- Moved `is_mutation_document` from `tools/graphql.py` to `tools/_common.py`
+  (re-exported from `graphql.py`); removed the stale "PyPI publishing is pending"
+  note from the README.
+
 ## [0.1.4] - 2026-06-08
 ### Removed
 - Removed `docs/reliaquest-api-issues.md` and the server-side-issue notes from the README

@@ -55,6 +55,32 @@ _SCALAR_ANNOT = {
     "Boolean": "bool",
 }
 
+# Corrections for known typos in the vendor collection's documents. Applied to
+# every GraphQL document (and therefore to the per-variable type strings derived
+# from it) before the document is parsed, so both the _DOC string and each tool
+# parameter's "GraphQL: <Type>" description come out corrected. Currently:
+# order-by variables mistyped as RoleFilter must be RoleOrder to pass server-side
+# variable-usage validation (the roles(order:) argument expects RoleOrder).
+_TYPE_CORRECTIONS = [
+    (re.compile(r"(\$order\d*)\s*:\s*RoleFilter\b"), r"\1: RoleOrder"),
+]
+
+
+def apply_type_corrections(query: str) -> str:
+    """Apply ``_TYPE_CORRECTIONS`` to a raw GraphQL document.
+
+    Args:
+        query: A GraphQL document string straight from the Postman collection.
+
+    Returns:
+        The document with every known vendor typo rewritten. Run before the
+        document is parsed so the corrected variable types propagate into both
+        the emitted ``_DOC`` string and the derived tool-parameter descriptions.
+    """
+    for pattern, replacement in _TYPE_CORRECTIONS:
+        query = pattern.sub(replacement, query)
+    return query
+
 # Richer, hand-curated descriptions for high-traffic SOC operations. Keyed by GraphQL
 # operation name. The default tool description is just "<folder> · <kind> <op>"; for the
 # operations an analyst reaches for most (incidents, cases, tasks, ...) that is too terse,
@@ -482,7 +508,10 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
     by_module: dict[str, list[dict]] = {}
     for folder, req in _iter_requests(collection.get("item", [])):
         gql = req["body"]["graphql"]
-        query = gql["query"].strip()
+        # Correct known vendor-collection typos before anything is parsed out of
+        # the document, so the fix lands in both _DOC and the derived parameter
+        # descriptions instead of having to be re-applied to the emitted files.
+        query = apply_type_corrections(gql["query"].strip())
         kind, op_name, sig = parse_operation(query)
         if not op_name:
             continue   # anonymous/unparseable operation -> can't name a tool, skip it
@@ -801,6 +830,37 @@ def generate(
     print(f"Generated {total} tools across {len(by_module)} modules into {out_dir}")
 
 
+def _resolve_collection_path(raw: str) -> Path:
+    """Resolve a user-supplied collection path and confine it to the working tree.
+
+    The collection path can be overridden on argv by whoever runs this generator.
+    To keep a stray or malicious ``../../../etc/passwd``-style argument from making
+    the generator read files outside the project (CWE-23 path traversal), we fully
+    resolve the path — following symlinks, so they can't be used to escape either —
+    and require the result to stay within the current working directory, which is
+    the repo root the script is meant to run from.
+
+    Args:
+        raw: The path string as supplied on the command line.
+
+    Returns:
+        The resolved, validated absolute path to the collection file.
+
+    Raises:
+        ValueError: if the resolved path escapes the working-directory root.
+    """
+    base = Path.cwd().resolve()
+    candidate = Path(raw)
+    resolved = (candidate if candidate.is_absolute() else base / candidate).resolve()
+    try:
+        resolved.relative_to(base)
+    except ValueError:
+        raise ValueError(
+            f"Collection path must stay within {base} (got {resolved})"
+        ) from None
+    return resolved
+
+
 def main(argv: list[str]) -> int:
     """CLI entry point: optionally take a collection path on argv, then run generate().
 
@@ -808,10 +868,18 @@ def main(argv: list[str]) -> int:
         argv: The process argv list; argv[1], if present, overrides the collection path.
 
     Returns:
-        Process exit code: 2 if the collection file is missing, otherwise 0 on success.
+        Process exit code: 2 if the path is rejected or the file is missing, else 0.
     """
-    collection = Path(argv[1]) if len(argv) > 1 else DEFAULT_COLLECTION
-    if not collection.exists():
+    if len(argv) > 1:
+        # argv[1] is operator-supplied: validate/confine it before it is ever read.
+        try:
+            collection = _resolve_collection_path(argv[1])
+        except ValueError as e:
+            print(str(e), file=sys.stderr)
+            return 2
+    else:
+        collection = DEFAULT_COLLECTION
+    if not collection.is_file():
         print(f"Collection not found: {collection}", file=sys.stderr)
         return 2
     generate(collection_path=collection)

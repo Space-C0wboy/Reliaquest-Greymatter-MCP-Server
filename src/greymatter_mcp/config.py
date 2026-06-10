@@ -109,8 +109,14 @@ class Config:
             raise ConfigError(f"GREYMATTER_TIMEOUT must be a number: {e}") from e
 
         # Logging verbosity; upper-cased so "info"/"INFO" both work with the
-        # standard logging module's level names.
-        log_level = os.getenv("LOG_LEVEL", "INFO").upper()
+        # standard logging module's level names. Validate against the known set so
+        # a typo (e.g. "verbose") fails fast here rather than making
+        # logging.basicConfig raise deep in server startup.
+        log_level = os.getenv("LOG_LEVEL", "INFO").strip().upper()
+        if log_level not in {"CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG", "NOTSET"}:
+            raise ConfigError(
+                f"LOG_LEVEL must be a standard logging level name (got {log_level!r})"
+            )
         # Host/port used only when the server runs over the HTTP transport (as
         # opposed to stdio). Default host is loopback so it isn't exposed publicly
         # unless deliberately overridden.
