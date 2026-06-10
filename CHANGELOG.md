@@ -14,6 +14,10 @@
 - `is_mutation_document` now scans every operation in a document instead of stopping
   at the first, so a trailing mutation in a multi-operation document
   (`query a { x } mutation b { y }`) can no longer slip past read-only mode.
+- The collection generator (`scripts/generate_from_collection.py`) confines a
+  command-line collection path to the working-tree root, resolving symlinks before
+  the check, so it cannot be pointed at arbitrary files outside the project
+  (CWE-23 path traversal).
 ### Changed
 - `LOG_LEVEL` is validated against the standard logging level names and fails fast
   with a `ConfigError` on a typo.
