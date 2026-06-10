@@ -110,6 +110,59 @@ async def test_raises_after_exhausting_retries_on_5xx(httpx_mock):
     await client.close()
 
 
+async def test_mutation_not_retried_on_5xx(httpx_mock):
+    # A mutation is not idempotent: a 502 must surface immediately as a hard
+    # failure on the FIRST attempt, with exactly one request sent — never retried.
+    httpx_mock.add_response(status_code=502)
+    client = GreyMatterClient(_cfg())
+    with pytest.raises(GreyMatterAPIError):
+        await client.execute("mutation m { x }", retryable=False)
+    assert len(httpx_mock.get_requests()) == 1
+    await client.close()
+
+
+async def test_mutation_not_retried_on_network_error(httpx_mock):
+    # Same exactly-once guarantee for transport-level failures: a ConnectError on
+    # a non-retryable call raises immediately without a second attempt.
+    import httpx
+    httpx_mock.add_exception(httpx.ConnectError("boom"))
+    client = GreyMatterClient(_cfg())
+    with pytest.raises(GreyMatterAPIError):
+        await client.execute("mutation m { x }", retryable=False)
+    assert len(httpx_mock.get_requests()) == 1
+    await client.close()
+
+
+async def test_query_still_retries_on_502_then_succeeds(httpx_mock):
+    # Read operations remain retryable: a 502 followed by a 200 retries and
+    # returns the data.
+    httpx_mock.add_response(status_code=502)
+    httpx_mock.add_response(json={"data": {"ok": True}})
+    client = GreyMatterClient(_cfg())
+    out = await client.execute("query q { ok }")
+    assert out == {"ok": True}
+    assert len(httpx_mock.get_requests()) == 2
+    await client.close()
+
+
+async def test_execute_operation_does_not_retry_mutations(httpx_mock, monkeypatch):
+    # End-to-end: routing a mutation through execute_operation (which every tool
+    # uses) must flip retryable off so the 502 is not retried.
+    import greymatter_mcp.tools._common as common
+
+    httpx_mock.add_response(status_code=502)
+    test_client = GreyMatterClient(_cfg())
+
+    async def _fake_get_client():
+        return test_client
+
+    monkeypatch.setattr(common, "get_client", _fake_get_client)
+    with pytest.raises(GreyMatterAPIError):
+        await common.execute_operation("mutation m { createThing { id } }")
+    assert len(httpx_mock.get_requests()) == 1
+    await test_client.close()
+
+
 async def test_non_json_error_body_is_handled(httpx_mock):
     # 500 is retryable, so every attempt returns the non-JSON body; the final
     # attempt must surface a GreyMatterAPIError without choking on the text body.
