@@ -53,6 +53,30 @@ def test_fragment_then_query_then_mutation_is_detected():
     )
 
 
+# --- string-literal handling (Codex review: braces/keywords inside string values) ---
+
+def test_brace_inside_string_does_not_misclassify_query():
+    # The closing brace and the word "mutation" live inside a string value; this is
+    # a read-only query and must NOT be flagged as a mutation.
+    assert is_mutation_document('query { search(q: "} mutation") { id } }') is False
+
+
+def test_mutation_keyword_inside_string_is_not_a_mutation():
+    assert is_mutation_document('query { search(q: "mutation") { id } }') is False
+
+
+def test_block_string_with_braces_and_keyword_is_not_a_mutation():
+    assert is_mutation_document('query { f(note: """ } mutation { """) { id } }') is False
+
+
+def test_real_mutation_with_string_containing_brace_still_detected():
+    assert is_mutation_document('mutation { addComment(text: "}") { id } }') is True
+
+
+def test_string_default_value_with_brace_is_not_a_mutation():
+    assert is_mutation_document('query x($a: String = "}") { f(a: $a) { id } }') is False
+
+
 async def _get_tool_fn(read_only: bool):
     mcp = FastMCP(name="t")
     gql_tool.register(mcp, read_only=read_only)
@@ -76,4 +100,15 @@ async def test_graphql_query_allows_query_when_read_only(monkeypatch):
     monkeypatch.setattr("greymatter_mcp.tools.graphql.execute_operation", fake_exec)
     fn = await _get_tool_fn(read_only=True)
     out = await fn(query="query { incidents { totalCount } }")
+    assert out == {"ok": True}
+
+
+async def test_read_only_allows_query_with_brace_in_string(monkeypatch):
+    # A read query whose string value contains "}" and "mutation" must not be
+    # blocked by read-only mode (Codex review regression).
+    async def fake_exec(query, variables=None, *, customer_slug=None):
+        return {"ok": True}
+    monkeypatch.setattr("greymatter_mcp.tools.graphql.execute_operation", fake_exec)
+    fn = await _get_tool_fn(read_only=True)
+    out = await fn(query='query { search(q: "} mutation") { id } }')
     assert out == {"ok": True}

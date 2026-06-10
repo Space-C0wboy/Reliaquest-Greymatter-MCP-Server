@@ -20,4 +20,4 @@ package version, which is reported to MCP clients during the handshake.
 
 # Single source of truth for the package version. Surfaced to MCP clients on
 # connect and kept in sync with the version recorded in the project metadata.
-__version__ = "0.1.4"
+__version__ = "0.1.6"
