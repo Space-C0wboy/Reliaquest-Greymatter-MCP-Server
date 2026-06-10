@@ -33,8 +33,12 @@ def is_mutation_document(query: str) -> bool:
     This is a lightweight, hand-rolled scanner rather than a full GraphQL parser.
     It is deliberately robust against the things that trip up naive checks — a
     leading UTF-8 BOM, ``#`` line comments, and ``fragment`` definitions that a
-    valid document may place before its operation. It also errs toward classifying
-    a document as a mutation: in read-only mode a false "mutation" only blocks a
+    valid document may place before its operation. Crucially it scans *every*
+    operation in the document, not just the leading one: a document like
+    ``query a { x } mutation b { y }`` is a mutation, and stopping at the first
+    ``query`` keyword would let a mutation ride along behind a read and defeat
+    read-only mode on a lenient server. It also errs toward classifying a
+    document as a mutation: in read-only mode a false "mutation" only blocks a
     read (annoying but safe), whereas a missed mutation would defeat the safety
     switch entirely.
 
@@ -47,61 +51,63 @@ def is_mutation_document(query: str) -> bool:
     text = query.lstrip("﻿")
     text = re.sub(r"#[^\n]*", "", text)
     text = text.strip()
+    n = len(text)
 
-    # Walk the document token by token looking for the first operation keyword.
-    i, n = 0, len(text)
+    def skip_braced_block(start: int) -> int:
+        """Return the index just past the {...} block found at/after start, or -1."""
+        brace = text.find("{", start)
+        if brace == -1:
+            return -1
+        depth, j = 0, brace
+        while j < n:
+            if text[j] == "{":
+                depth += 1
+            elif text[j] == "}":
+                depth -= 1
+                if depth == 0:
+                    return j + 1
+            j += 1
+        return -1
+
+    i = 0
+    parse_failed = False
     while i < n:
-        # Skip insignificant characters: GraphQL treats whitespace and commas as
-        # ignorable separators between tokens.
+        # Whitespace and commas are insignificant separators in GraphQL.
         while i < n and text[i] in " \t\r\n,":
             i += 1
         if i >= n:
             break
         if text[i] == "{":
-            # A bare "{" with no preceding keyword is the anonymous query
-            # shorthand, which is always a query.
-            return False
-        # Try to read a GraphQL name (keyword or operation name) at the cursor.
+            # Anonymous query shorthand — a query; skip its body, keep scanning.
+            nxt = skip_braced_block(i)
+            if nxt == -1:
+                parse_failed = True
+                break
+            i = nxt
+            continue
         m = re.match(r"[A-Za-z_][A-Za-z0-9_]*", text[i:])
         if not m:
-            # Not a name (e.g. a stray punctuation char) — step over it.
             i += 1
             continue
         word = m.group(0)
         if word == "mutation":
             return True
-        if word in ("query", "subscription"):
-            # An explicit non-mutation operation leads the document.
-            return False
-        if word == "fragment":
-            # A fragment definition precedes the operation. Skip its entire body
-            # by brace-matching so we don't mistake names inside it for the
-            # operation keyword.
-            brace = text.find("{", i)
-            if brace == -1:
-                # Malformed (no body) — give up the structured scan.
+        if word in ("query", "subscription", "fragment"):
+            # A non-mutation definition: skip its entire body and KEEP
+            # scanning — a mutation may legally follow in the same document.
+            nxt = skip_braced_block(i)
+            if nxt == -1:
+                parse_failed = True
                 break
-            depth, j = 0, brace
-            while j < n:
-                if text[j] == "{":
-                    depth += 1
-                elif text[j] == "}":
-                    depth -= 1
-                    if depth == 0:
-                        # Found the matching close brace; resume just past it.
-                        j += 1
-                        break
-                j += 1
-            i = j
+            i = nxt
             continue
-        # Some other leading name we don't recognize as an operation keyword;
-        # advance past it and keep scanning.
         i += len(word)
 
-    # Structured scan didn't find a leading operation keyword. Be conservative:
-    # if the word "mutation" appears anywhere in the document, treat it as one so
-    # read-only mode can't be bypassed by an unusual document layout.
-    return bool(re.search(r"\bmutation\b", text))
+    if parse_failed:
+        # Couldn't scan structurally — be conservative: any "mutation" word
+        # anywhere means we treat the document as a mutation.
+        return bool(re.search(r"\bmutation\b", text))
+    return False
 
 
 def drop_none(variables: dict[str, Any]) -> dict[str, Any]:
