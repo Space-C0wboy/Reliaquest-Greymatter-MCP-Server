@@ -45,3 +45,10 @@ def test_timeout_must_be_number(monkeypatch):
     monkeypatch.setenv("GREYMATTER_TIMEOUT", "abc")
     with pytest.raises(ConfigError):
         Config.from_env()
+
+
+def test_invalid_log_level_raises(monkeypatch):
+    _base_env(monkeypatch)
+    monkeypatch.setenv("LOG_LEVEL", "verbose")
+    with pytest.raises(ConfigError):
+        Config.from_env()
