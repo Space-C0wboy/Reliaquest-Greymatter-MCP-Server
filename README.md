@@ -113,10 +113,6 @@ uv tool install greymatter-mcp
 pip install greymatter-mcp
 ```
 
-> [!NOTE]
-> PyPI publishing is pending — until the first release is published, install from source
-> (below).
-
 For development from source:
 
 ```bash

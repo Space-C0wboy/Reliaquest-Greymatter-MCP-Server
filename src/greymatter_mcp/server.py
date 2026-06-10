@@ -116,12 +116,13 @@ def main() -> int:
         import asyncio
 
         # FastMCP's own event loop has already closed by the time we get here,
-        # so we spin up a fresh one with asyncio.run. If that's somehow not
-        # possible (a loop is unexpectedly still running), swallow the
-        # RuntimeError — cleanup is best-effort and the process is exiting.
+        # so we spin up a fresh one with asyncio.run. The httpx client being
+        # closed was created on that now-gone loop, and aclose() can raise more
+        # than RuntimeError (e.g. anyio errors) when run from a fresh loop, so we
+        # swallow anything — cleanup is best-effort and the process is exiting.
         try:
             asyncio.run(shutdown_client())
-        except RuntimeError:
+        except Exception:  # noqa: BLE001 — best-effort cleanup; process is exiting
             pass
     return 0
 
