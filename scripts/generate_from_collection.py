@@ -55,6 +55,32 @@ _SCALAR_ANNOT = {
     "Boolean": "bool",
 }
 
+# Corrections for known typos in the vendor collection's documents. Applied to
+# every GraphQL document (and therefore to the per-variable type strings derived
+# from it) before the document is parsed, so both the _DOC string and each tool
+# parameter's "GraphQL: <Type>" description come out corrected. Currently:
+# order-by variables mistyped as RoleFilter must be RoleOrder to pass server-side
+# variable-usage validation (the roles(order:) argument expects RoleOrder).
+_TYPE_CORRECTIONS = [
+    (re.compile(r"(\$order\d*)\s*:\s*RoleFilter\b"), r"\1: RoleOrder"),
+]
+
+
+def apply_type_corrections(query: str) -> str:
+    """Apply ``_TYPE_CORRECTIONS`` to a raw GraphQL document.
+
+    Args:
+        query: A GraphQL document string straight from the Postman collection.
+
+    Returns:
+        The document with every known vendor typo rewritten. Run before the
+        document is parsed so the corrected variable types propagate into both
+        the emitted ``_DOC`` string and the derived tool-parameter descriptions.
+    """
+    for pattern, replacement in _TYPE_CORRECTIONS:
+        query = pattern.sub(replacement, query)
+    return query
+
 # Richer, hand-curated descriptions for high-traffic SOC operations. Keyed by GraphQL
 # operation name. The default tool description is just "<folder> · <kind> <op>"; for the
 # operations an analyst reaches for most (incidents, cases, tasks, ...) that is too terse,
@@ -482,7 +508,10 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
     by_module: dict[str, list[dict]] = {}
     for folder, req in _iter_requests(collection.get("item", [])):
         gql = req["body"]["graphql"]
-        query = gql["query"].strip()
+        # Correct known vendor-collection typos before anything is parsed out of
+        # the document, so the fix lands in both _DOC and the derived parameter
+        # descriptions instead of having to be re-applied to the emitted files.
+        query = apply_type_corrections(gql["query"].strip())
         kind, op_name, sig = parse_operation(query)
         if not op_name:
             continue   # anonymous/unparseable operation -> can't name a tool, skip it
