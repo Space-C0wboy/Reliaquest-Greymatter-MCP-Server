@@ -184,6 +184,7 @@ class GreyMatterClient:
         variables: dict[str, Any] | None = None,
         *,
         customer_slug: str | None = None,
+        retryable: bool = True,
     ) -> Any:
         """Run a GraphQL document and return its ``data`` object.
 
@@ -198,6 +199,13 @@ class GreyMatterClient:
             customer_slug: Optional OpCo slug to scope this single call to one
                 company, overriding the configured default. Keyword-only to
                 keep call sites self-documenting.
+            retryable: When True (the default), transient network errors and
+                ``429``/``5xx`` responses are retried with backoff. Callers MUST
+                pass ``False`` for non-idempotent operations (mutations): if a
+                mutation succeeds server-side but its response is lost, a retry
+                would execute it a second time. With ``retryable=False`` the
+                operation is sent exactly once and any transient failure is
+                surfaced immediately instead of being retried.
 
         Returns:
             The ``data`` object from a successful GraphQL response (or, in the
@@ -249,18 +257,25 @@ class GreyMatterClient:
                 )
             except httpx.HTTPError as e:
                 # Network-level failure (DNS, connect, read timeout, etc.). On
-                # the last attempt give up with status 0 ("no HTTP response");
-                # otherwise schedule a jittered retry.
-                if attempt == _MAX_RETRIES - 1:
+                # the last attempt — or when the caller forbade retries (a
+                # non-idempotent mutation) — give up with status 0 ("no HTTP
+                # response"); otherwise schedule a jittered retry.
+                if not retryable or attempt == _MAX_RETRIES - 1:
                     raise GreyMatterAPIError(0, f"Network error: {e}") from e
                 logger.warning("Network error on attempt %d: %s", attempt + 1, e)
                 next_backoff = random.uniform(0, 2**attempt)
                 continue
 
-            # Retryable status AND we still have attempts left: prefer the
-            # server's Retry-After (capped) over our own jittered backoff,
-            # then loop to try again.
-            if response.status_code in _RETRYABLE_STATUS_CODES and attempt < _MAX_RETRIES - 1:
+            # Retryable status AND retries are allowed AND we still have attempts
+            # left: prefer the server's Retry-After (capped) over our own jittered
+            # backoff, then loop to try again. When retries are forbidden (a
+            # mutation), a 429/5xx falls through to the hard-failure branch below
+            # on the first attempt so the operation is never re-sent.
+            if (
+                retryable
+                and response.status_code in _RETRYABLE_STATUS_CODES
+                and attempt < _MAX_RETRIES - 1
+            ):
                 retry_after = _parse_retry_after(response.headers.get("retry-after"))
                 next_backoff = (
                     min(retry_after, _MAX_RETRY_AFTER_SECONDS)

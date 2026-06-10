@@ -24,7 +24,7 @@ async def test_execute_operation_coerces_json_string_objects(monkeypatch):
     captured = {}
 
     class FakeClient:
-        async def execute(self, query, variables=None, *, customer_slug=None):
+        async def execute(self, query, variables=None, *, customer_slug=None, retryable=True):
             captured["variables"] = variables
             return {}
 
@@ -45,10 +45,11 @@ async def test_execute_operation_uses_shared_client(monkeypatch):
     calls = {}
 
     class FakeClient:
-        async def execute(self, query, variables=None, *, customer_slug=None):
+        async def execute(self, query, variables=None, *, customer_slug=None, retryable=True):
             calls["query"] = query
             calls["variables"] = variables
             calls["customer_slug"] = customer_slug
+            calls["retryable"] = retryable
             return {"ok": True}
 
     async def fake_get_client():
@@ -59,3 +60,4 @@ async def test_execute_operation_uses_shared_client(monkeypatch):
     assert out == {"ok": True}
     assert calls["variables"] == {"a": 1}  # None dropped
     assert calls["customer_slug"] == "opco"
+    assert calls["retryable"] is True  # a query is idempotent -> retryable

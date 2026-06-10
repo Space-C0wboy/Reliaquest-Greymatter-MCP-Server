@@ -15,9 +15,93 @@ puts the two argument-normalization rules MCP requires in one place:
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from ..client import get_client
+
+
+def is_mutation_document(query: str) -> bool:
+    """Return True if the GraphQL document's operation is a mutation.
+
+    Args:
+        query: A raw GraphQL document string.
+
+    Returns:
+        True if the leading (or, as a fallback, any) operation is a mutation.
+
+    This is a lightweight, hand-rolled scanner rather than a full GraphQL parser.
+    It is deliberately robust against the things that trip up naive checks — a
+    leading UTF-8 BOM, ``#`` line comments, and ``fragment`` definitions that a
+    valid document may place before its operation. It also errs toward classifying
+    a document as a mutation: in read-only mode a false "mutation" only blocks a
+    read (annoying but safe), whereas a missed mutation would defeat the safety
+    switch entirely.
+
+    It is hosted here (rather than in ``graphql.py``) so that ``execute_operation``
+    can consult it to decide whether an operation is safe to retry — mutations are
+    not idempotent and must be sent exactly once.
+    """
+    # Drop a leading UTF-8 BOM (some editors/clients prepend one) and strip every
+    # "#..." line comment so commented-out keywords can't fool the scan.
+    text = query.lstrip("﻿")
+    text = re.sub(r"#[^\n]*", "", text)
+    text = text.strip()
+
+    # Walk the document token by token looking for the first operation keyword.
+    i, n = 0, len(text)
+    while i < n:
+        # Skip insignificant characters: GraphQL treats whitespace and commas as
+        # ignorable separators between tokens.
+        while i < n and text[i] in " \t\r\n,":
+            i += 1
+        if i >= n:
+            break
+        if text[i] == "{":
+            # A bare "{" with no preceding keyword is the anonymous query
+            # shorthand, which is always a query.
+            return False
+        # Try to read a GraphQL name (keyword or operation name) at the cursor.
+        m = re.match(r"[A-Za-z_][A-Za-z0-9_]*", text[i:])
+        if not m:
+            # Not a name (e.g. a stray punctuation char) — step over it.
+            i += 1
+            continue
+        word = m.group(0)
+        if word == "mutation":
+            return True
+        if word in ("query", "subscription"):
+            # An explicit non-mutation operation leads the document.
+            return False
+        if word == "fragment":
+            # A fragment definition precedes the operation. Skip its entire body
+            # by brace-matching so we don't mistake names inside it for the
+            # operation keyword.
+            brace = text.find("{", i)
+            if brace == -1:
+                # Malformed (no body) — give up the structured scan.
+                break
+            depth, j = 0, brace
+            while j < n:
+                if text[j] == "{":
+                    depth += 1
+                elif text[j] == "}":
+                    depth -= 1
+                    if depth == 0:
+                        # Found the matching close brace; resume just past it.
+                        j += 1
+                        break
+                j += 1
+            i = j
+            continue
+        # Some other leading name we don't recognize as an operation keyword;
+        # advance past it and keep scanning.
+        i += len(word)
+
+    # Structured scan didn't find a leading operation keyword. Be conservative:
+    # if the word "mutation" appears anywhere in the document, treat it as one so
+    # read-only mode can't be bypassed by an unusual document layout.
+    return bool(re.search(r"\bmutation\b", text))
 
 
 def drop_none(variables: dict[str, Any]) -> dict[str, Any]:
@@ -100,4 +184,13 @@ async def execute_operation(
     # Drop unset vars first, then coerce the survivors so we never waste effort
     # parsing values that were going to be discarded anyway.
     cleaned = {k: coerce_json(v) for k, v in drop_none(variables or {}).items()}
-    return await client.execute(query, cleaned, customer_slug=customer_slug)
+    # Only queries are safe to retry. A mutation that succeeds server-side but
+    # whose response is lost (read timeout, gateway 5xx) would be re-sent on a
+    # retry and run twice — duplicate comments, duplicate API keys, a playbook
+    # run twice. Mutations are not idempotent, so they go out exactly once.
+    return await client.execute(
+        query,
+        cleaned,
+        customer_slug=customer_slug,
+        retryable=not is_mutation_document(query),
+    )
