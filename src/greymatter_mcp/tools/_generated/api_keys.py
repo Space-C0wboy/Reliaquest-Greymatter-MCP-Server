@@ -28,7 +28,7 @@ from .._common import execute_operation
 
 # operation name -> GraphQL document string (after exclusions/trims/pruning were applied).
 _DOC: dict[str, str] = {
-    "apiKeys": "query apiKeys ($after: String, $filter: AccessGroupFilter, $first: Int, $order: AccessGroupOrder, $after1: String, $filter1: PodFilter, $first1: Int, $order1: PodOrder, $after2: String, $filter2: RoleFilter, $first2: Int, $order2: RoleFilter, $user: ID) {\n    apiKeys (user: $user) {\n        createdAt\n        expiresAt\n        id\n        key\n        lastQuery\n        lastUsedAt\n        user {\n            accessGroups (after: $after, filter: $filter, first: $first, order: $order) {\n                totalCount\n            }\n            email\n            fullName\n            id\n            pods (after: $after1, filter: $filter1, first: $first1, order: $order1) {\n                totalCount\n            }\n            roles (after: $after2, filter: $filter2, first: $first2, order: $order2) {\n                totalCount\n            }\n            serviceNowId\n        }\n    }\n}",
+    "apiKeys": "query apiKeys ($after: String, $filter: AccessGroupFilter, $first: Int, $order: AccessGroupOrder, $after1: String, $filter1: PodFilter, $first1: Int, $order1: PodOrder, $after2: String, $filter2: RoleFilter, $first2: Int, $order2: RoleOrder, $user: ID) {\n    apiKeys (user: $user) {\n        createdAt\n        expiresAt\n        id\n        key\n        lastQuery\n        lastUsedAt\n        user {\n            accessGroups (after: $after, filter: $filter, first: $first, order: $order) {\n                totalCount\n            }\n            email\n            fullName\n            id\n            pods (after: $after1, filter: $filter1, first: $first1, order: $order1) {\n                totalCount\n            }\n            roles (after: $after2, filter: $filter2, first: $first2, order: $order2) {\n                totalCount\n            }\n            serviceNowId\n        }\n    }\n}",
     "createApiKey": "mutation createApiKey ($input: CreateApiKeyInput!) {\n    createApiKey (input: $input) {\n        apiKey {\n            createdAt\n            expiresAt\n            id\n            key\n            lastQuery\n            lastUsedAt\n            user {\n                email\n                fullName\n                id\n                serviceNowId\n            }\n        }\n        success\n    }\n}",
     "deleteApiKeyById": "mutation deleteApiKeyById ($id: ID!, $user: ID) {\n    deleteApiKeyById (id: $id, user: $user) {\n        success\n    }\n}",
     "deleteApiKeys": "mutation deleteApiKeys ($user: ID) {\n    deleteApiKeys (user: $user) {\n        success\n    }\n}",
@@ -51,7 +51,7 @@ def register(mcp: FastMCP, *, read_only: bool) -> None:
         after2: Annotated[str | None, Field(default=None, description="GraphQL: String")] = None,
         filter2: Annotated[Any | None, Field(default=None, description="GraphQL: RoleFilter")] = None,
         first2: Annotated[int | None, Field(default=None, description="GraphQL: Int")] = None,
-        order2: Annotated[Any | None, Field(default=None, description="GraphQL: RoleFilter")] = None,
+        order2: Annotated[Any | None, Field(default=None, description="GraphQL: RoleOrder")] = None,
         user: Annotated[str | None, Field(default=None, description="GraphQL: ID")] = None,
         customer_slug: Annotated[str | None, Field(default=None, description="Override the x-reliaquest-customer (OpCo) header.")] = None,
     ) -> Any:
