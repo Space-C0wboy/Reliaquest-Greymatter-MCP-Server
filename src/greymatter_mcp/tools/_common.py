@@ -45,6 +45,11 @@ def is_mutation_document(query: str) -> bool:
     It is hosted here (rather than in ``graphql.py``) so that ``execute_operation``
     can consult it to decide whether an operation is safe to retry — mutations are
     not idempotent and must be sent exactly once.
+
+    String literals are handled explicitly: a ``{``, ``}``, or the word ``mutation``
+    *inside* a GraphQL string value (e.g. ``query { f(q: "} mutation") { id } }``)
+    must not affect brace depth or be read as a keyword, or a harmless read would be
+    misclassified as a mutation and wrongly rejected in read-only mode.
     """
     # Drop a leading UTF-8 BOM (some editors/clients prepend one) and strip every
     # "#..." line comment so commented-out keywords can't fool the scan.
@@ -53,16 +58,51 @@ def is_mutation_document(query: str) -> bool:
     text = text.strip()
     n = len(text)
 
-    def skip_braced_block(start: int) -> int:
-        """Return the index just past the {...} block found at/after start, or -1."""
-        brace = text.find("{", start)
-        if brace == -1:
-            return -1
-        depth, j = 0, brace
+    def skip_string(start: int) -> int:
+        """Return the index just past the string literal that begins at ``start``.
+
+        ``start`` must point at a ``"``. Handles both block strings (``\"\"\"...\"\"\"``)
+        and ordinary strings (with ``\\`` escapes). Used to step over string values so
+        their contents are never parsed as document structure.
+        """
+        if text[start : start + 3] == '"""':
+            end = text.find('"""', start + 3)
+            return end + 3 if end != -1 else n
+        j = start + 1
         while j < n:
-            if text[j] == "{":
+            if text[j] == "\\":  # backslash escapes the next char (e.g. \")
+                j += 2
+                continue
+            if text[j] == '"':
+                return j + 1
+            j += 1
+        return n
+
+    def skip_braced_block(start: int) -> int:
+        """Return the index just past the {...} block at/after start, or -1.
+
+        Skips string literals while both locating the opening brace and matching
+        depth, so braces inside a string value can't end the block prematurely.
+        """
+        # Locate the opening brace, stepping over any string literal in the way
+        # (e.g. a variable default value like `= "{"`).
+        j = start
+        while j < n and text[j] != "{":
+            if text[j] == '"':
+                j = skip_string(j)
+                continue
+            j += 1
+        if j >= n:
+            return -1
+        depth = 0
+        while j < n:
+            c = text[j]
+            if c == '"':
+                j = skip_string(j)
+                continue
+            if c == "{":
                 depth += 1
-            elif text[j] == "}":
+            elif c == "}":
                 depth -= 1
                 if depth == 0:
                     return j + 1
@@ -77,6 +117,11 @@ def is_mutation_document(query: str) -> bool:
             i += 1
         if i >= n:
             break
+        if text[i] == '"':
+            # A string literal at the top level (e.g. a variable default value);
+            # step over it so its contents can't be mistaken for structure.
+            i = skip_string(i)
+            continue
         if text[i] == "{":
             # Anonymous query shorthand — a query; skip its body, keep scanning.
             nxt = skip_braced_block(i)

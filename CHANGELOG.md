@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.6] - 2026-06-10
+### Fixed
+- `is_mutation_document` now ignores GraphQL string literals when scanning, so a `}` or
+  the word `mutation` inside a string value (e.g. `query { search(q: "} mutation") { id } }`)
+  no longer misclassifies a read-only query as a mutation and rejects it. Both the
+  brace-matcher and the top-level scan skip ordinary and block (`"""…"""`) strings
+  (addresses the Codex review of PR #6).
+- Corrected `__version__` (was left at `0.1.4` in the 0.1.5 release while `pyproject.toml`
+  read `0.1.5`); both are now in sync.
+
 ## [0.1.5] - 2026-06-10
 ### Fixed
 - Mutations are no longer retried. `GreyMatterClient.execute` gained a `retryable`
