@@ -7,8 +7,14 @@ from greymatter_mcp.errors import GreyMatterAPIError, GreyMatterGraphQLError
 
 def _cfg(**over):
     base = dict(
-        api_key="k", base_url="https://gm.example/graphql", customer_slug=None,
-        read_only=False, timeout=5.0, log_level="INFO", http_host="127.0.0.1", http_port=8765,
+        api_key="k",
+        base_url="https://gm.example/graphql",
+        customer_slug=None,
+        read_only=False,
+        timeout=5.0,
+        log_level="INFO",
+        http_host="127.0.0.1",
+        http_port=8765,
     )
     base.update(over)
     return Config(**base)
@@ -70,6 +76,7 @@ async def test_retries_on_503_then_succeeds(httpx_mock):
 
 async def test_retries_on_network_error_then_succeeds(httpx_mock):
     import httpx
+
     httpx_mock.add_exception(httpx.ConnectError("boom"))
     httpx_mock.add_response(json={"data": {"ok": True}})
     client = GreyMatterClient(_cfg())
@@ -80,7 +87,9 @@ async def test_retries_on_network_error_then_succeeds(httpx_mock):
 
 
 async def test_graphql_error_joins_multiple_messages(httpx_mock):
-    httpx_mock.add_response(json={"errors": [{"message": "first"}, {"message": "second"}], "data": None})
+    httpx_mock.add_response(
+        json={"errors": [{"message": "first"}, {"message": "second"}], "data": None}
+    )
     client = GreyMatterClient(_cfg())
     with pytest.raises(GreyMatterGraphQLError) as ei:
         await client.execute("query { x }")
@@ -91,6 +100,7 @@ async def test_graphql_error_joins_multiple_messages(httpx_mock):
 
 def test_parse_retry_after_seconds_and_cap():
     from greymatter_mcp.client import _MAX_RETRY_AFTER_SECONDS, _parse_retry_after
+
     assert _parse_retry_after("2") == 2.0
     assert _parse_retry_after(None) is None
     assert _parse_retry_after("not-a-date") is None
@@ -125,6 +135,7 @@ async def test_mutation_not_retried_on_network_error(httpx_mock):
     # Same exactly-once guarantee for transport-level failures: a ConnectError on
     # a non-retryable call raises immediately without a second attempt.
     import httpx
+
     httpx_mock.add_exception(httpx.ConnectError("boom"))
     client = GreyMatterClient(_cfg())
     with pytest.raises(GreyMatterAPIError):

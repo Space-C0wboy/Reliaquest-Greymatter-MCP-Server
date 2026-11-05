@@ -81,6 +81,7 @@ def apply_type_corrections(query: str) -> str:
         query = pattern.sub(replacement, query)
     return query
 
+
 # Richer, hand-curated descriptions for high-traffic SOC operations. Keyed by GraphQL
 # operation name. The default tool description is just "<folder> · <kind> <op>"; for the
 # operations an analyst reaches for most (incidents, cases, tasks, ...) that is too terse,
@@ -182,8 +183,8 @@ def parse_operation(query: str) -> tuple[str, str, str]:
     if not m:
         return ("query", "", "")
     kind = m.group(1)
-    name = m.group(2) or ""   # anonymous operations have no name -> ""
-    sig = m.group(3) or ""    # no variables -> "" (parse_variable_decls returns [])
+    name = m.group(2) or ""  # anonymous operations have no name -> ""
+    sig = m.group(3) or ""  # no variables -> "" (parse_variable_decls returns [])
     return (kind, name, sig)
 
 
@@ -219,9 +220,9 @@ def parse_variable_decls(signature: str) -> list[tuple[str, str, bool]]:
         if not part or ":" not in part:
             continue
         name_part, type_part = part.split(":", 1)
-        name = name_part.strip().lstrip("$")     # "$first" -> "first"
+        name = name_part.strip().lstrip("$")  # "$first" -> "first"
         gql_type = type_part.strip()
-        required = gql_type.endswith("!")        # GraphQL non-null marker => required
+        required = gql_type.endswith("!")  # GraphQL non-null marker => required
         out.append((name, gql_type, required))
     return out
 
@@ -246,13 +247,13 @@ def py_annotation(gql_type: str) -> str:
     """
     t = gql_type.strip()
     if t.startswith("["):
-        return "list"             # list types are left untyped at element level
-    base = t.rstrip("!")          # strip the non-null marker to look up the base scalar
+        return "list"  # list types are left untyped at element level
+    base = t.rstrip("!")  # strip the non-null marker to look up the base scalar
     required = t.endswith("!")
     if base in _SCALAR_ANNOT:
         py = _SCALAR_ANNOT[base]
-        return py if required else f"{py} | None"   # nullable scalar gets an Optional
-    return "Any" if required else "Any | None"       # unknown type -> Any (optionally None)
+        return py if required else f"{py} | None"  # nullable scalar gets an Optional
+    return "Any" if required else "Any | None"  # unknown type -> Any (optionally None)
 
 
 def _strip_field_selection(query: str, field_name: str) -> str:
@@ -281,7 +282,7 @@ def _strip_field_selection(query: str, field_name: str) -> str:
     while True:
         m = pattern.search(query)
         if not m:
-            return query   # no more occurrences -> done
+            return query  # no more occurrences -> done
         start, j = m.start(), m.end()
         # Skip any whitespace between the field name and a possible "{" sub-selection.
         while j < len(query) and query[j] in " \t\r\n":
@@ -324,10 +325,10 @@ def _prune_unused_variables(query: str) -> str:
     """
     m = _OP_RE.match(query)
     if not m or not m.group(3):
-        return query   # no signature at all -> nothing to prune
+        return query  # no signature at all -> nothing to prune
     sig = m.group(3)
     sig_start, sig_end = m.start(3), m.end(3)
-    body = query[sig_end:]   # everything after the signature is where variables get used
+    body = query[sig_end:]  # everything after the signature is where variables get used
     decls = parse_variable_decls(sig)
     if not decls:
         return query
@@ -338,7 +339,7 @@ def _prune_unused_variables(query: str) -> str:
         if re.search(r"(?<![A-Za-z0-9_])\$" + re.escape(name) + r"(?![A-Za-z0-9_])", body)
     ]
     if len(used) == len(decls):
-        return query   # all variables used -> leave the document byte-for-byte unchanged
+        return query  # all variables used -> leave the document byte-for-byte unchanged
     # Rebuild the signature from the survivors; if none remain, drop the "(...)" entirely.
     new_sig = ("(" + ", ".join(f"${n}: {t}" for n, t in used) + ")") if used else ""
     return query[:sig_start] + new_sig + query[sig_end:]
@@ -405,7 +406,7 @@ def _set_mutation_selection(query: str, op_name: str, selection: str) -> str:
                 j += 1
             # Splice: keep everything up to the "{", drop the old block, insert the new one.
             return query[:i] + selection + query[j:]
-    return query   # field invocation not found -> leave the document unchanged
+    return query  # field invocation not found -> leave the document unchanged
 
 
 def tool_name(op_name: str) -> str:
@@ -422,8 +423,8 @@ def tool_name(op_name: str) -> str:
     before a capitalized word and at the lower/digit-to-upper boundary respectively, which
     together handle both "runPlaybook" -> "run_playbook" and acronym-ish transitions.
     """
-    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", op_name)   # "...Playbook" -> "..._Playbook"
-    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)        # "runP..." -> "run_P..."
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", op_name)  # "...Playbook" -> "..._Playbook"
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)  # "runP..." -> "run_P..."
     return s.lower()
 
 
@@ -442,13 +443,13 @@ def module_name(folder: str) -> str:
     camelCase, strip illegal characters, and finally guarantee a safe leading character.
     """
     s = folder.strip().replace("-", " ").replace("/", " ")  # treat - and / as word breaks
-    s = re.sub(r"\s+", "_", s)                                # spaces -> underscores
-    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)              # split camelCase (as tool_name)
+    s = re.sub(r"\s+", "_", s)  # spaces -> underscores
+    s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)  # split camelCase (as tool_name)
     s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s)
-    s = re.sub(r"[^a-z0-9_]", "", s.lower())                  # drop anything not [a-z0-9_]
-    s = re.sub(r"_+", "_", s).strip("_")                      # collapse/trim underscores
+    s = re.sub(r"[^a-z0-9_]", "", s.lower())  # drop anything not [a-z0-9_]
+    s = re.sub(r"_+", "_", s).strip("_")  # collapse/trim underscores
     if not s or s[0].isdigit():
-        s = "mod_" + s   # ensure a valid identifier that doesn't lead with a digit
+        s = "mod_" + s  # ensure a valid identifier that doesn't lead with a digit
     return s
 
 
@@ -514,15 +515,15 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
         query = apply_type_corrections(gql["query"].strip())
         kind, op_name, sig = parse_operation(query)
         if not op_name:
-            continue   # anonymous/unparseable operation -> can't name a tool, skip it
+            continue  # anonymous/unparseable operation -> can't name a tool, skip it
         # --- per-operation transform pipeline (see docstring for why this order) ---
         for _excl in FIELD_EXCLUSIONS.get(op_name, []):
             query = _strip_field_selection(query, _excl)
         if kind == "mutation" and op_name in MUTATION_RESPONSE_TRIMS:
             query = _set_mutation_selection(query, op_name, MUTATION_RESPONSE_TRIMS[op_name])
         query = _prune_unused_variables(query)
-        kind, op_name, sig = parse_operation(query)   # re-parse: sig now reflects pruning
-        example = gql.get("variables") or ""           # Postman's example variables JSON
+        kind, op_name, sig = parse_operation(query)  # re-parse: sig now reflects pruning
+        example = gql.get("variables") or ""  # Postman's example variables JSON
         mod = module_name(folder)
         by_module.setdefault(mod, []).append(
             {
@@ -537,7 +538,7 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
     # Deterministic intra-module order: queries first (False sorts before True), then by name.
     for ops in by_module.values():
         ops.sort(key=lambda o: (o["kind"] != "query", o["op_name"]))
-    return dict(sorted(by_module.items()))   # deterministic module order
+    return dict(sorted(by_module.items()))  # deterministic module order
 
 
 # Module template. _emit_module substitutes {folder} (the domain name) and {ALLDOCS}
@@ -599,10 +600,10 @@ def _example_snippet(example: str) -> str:
     try:
         obj = json.loads(example)
     except (ValueError, TypeError):
-        return ""   # not valid JSON -> just omit the example rather than emitting garbage
-    compact = json.dumps(obj, separators=(",", ":"))   # drop whitespace for compactness
+        return ""  # not valid JSON -> just omit the example rather than emitting garbage
+    compact = json.dumps(obj, separators=(",", ":"))  # drop whitespace for compactness
     if len(compact) > 300:
-        compact = compact[:297] + "..."                 # truncate overly long examples
+        compact = compact[:297] + "..."  # truncate overly long examples
     return compact
 
 
@@ -643,8 +644,10 @@ def _emit_tool(op: dict) -> str:
     excluded = FIELD_EXCLUSIONS.get(op["op_name"], [])
     if excluded:
         fields = ", ".join(_EXCLUSION_NOTES.get(f, f"`{f}`") for f in excluded)
-        desc += (f" NOTE: {fields} is omitted from this query as a workaround for a "
-                 "GreyMatter server-side error; request it via graphql_query if you need it.")
+        desc += (
+            f" NOTE: {fields} is omitted from this query as a workaround for a "
+            "GreyMatter server-side error; request it via graphql_query if you need it."
+        )
 
     params: list[str] = []
     var_items: list[str] = []
@@ -654,7 +657,7 @@ def _emit_tool(op: dict) -> str:
     ordered = sorted(decls, key=lambda d: not d[2])
     for var_name, gql_type, required in ordered:
         annot = py_annotation(gql_type)
-        pdesc = f"GraphQL: {gql_type}"   # surface the exact GraphQL type to the caller
+        pdesc = f"GraphQL: {gql_type}"  # surface the exact GraphQL type to the caller
         if required:
             params.append(
                 f"        {var_name}: Annotated[{annot}, Field(description={json.dumps(pdesc)})],"
@@ -666,7 +669,7 @@ def _emit_tool(op: dict) -> str:
         var_items.append(f"{json.dumps(var_name)}: {var_name}")
     # Every tool gets an optional customer_slug to override the OpCo header for multi-tenant accounts.
     params.append(
-        '        customer_slug: Annotated[str | None, Field(default=None, '
+        "        customer_slug: Annotated[str | None, Field(default=None, "
         'description="Override the x-reliaquest-customer (OpCo) header.")] = None,'
     )
     var_dict = "{" + ", ".join(var_items) + "}"
@@ -675,15 +678,17 @@ def _emit_tool(op: dict) -> str:
 
     # Teaching comment emitted just above the tool, at the tool's own indent, naming the
     # GraphQL operation, its kind, and the resulting MCP tool name.
-    op_comment = f'{indent}    # {op["op_name"]} ({op["kind"]}) — GraphQL operation, tool name "{name}"'
+    op_comment = (
+        f'{indent}    # {op["op_name"]} ({op["kind"]}) — GraphQL operation, tool name "{name}"'
+    )
 
-    body = f'''{op_comment}
+    body = f"""{op_comment}
 {indent}    @mcp.tool(name={json.dumps(name)}, description={json.dumps(desc)})
 {indent}    async def {name}(
 {chr(10).join((indent + p) for p in params)}
 {indent}    ) -> Any:
 {indent}        return await execute_operation(_DOC[{json.dumps(op["op_name"])}], {var_dict}, customer_slug=customer_slug)
-'''
+"""
     return body
 
 
@@ -707,9 +712,9 @@ def _emit_module(folder: str, ops: list[dict]) -> str:
         compiles as a valid (no-op) function.
     """
     docs = {op["op_name"]: op["query"] for op in ops}
-    alldocs = "{\n" + "\n".join(
-        f"    {json.dumps(k)}: {json.dumps(v)}," for k, v in docs.items()
-    ) + "\n}"
+    alldocs = (
+        "{\n" + "\n".join(f"    {json.dumps(k)}: {json.dumps(v)}," for k, v in docs.items()) + "\n}"
+    )
     # Escape so a folder name with a quote/backslash can't break out of the _HEADER docstring.
     safe_folder = folder.replace("\\", "\\\\").replace('"', '\\"')
     out = _HEADER.replace("{folder}", safe_folder).replace("{ALLDOCS}", alldocs)
@@ -718,7 +723,7 @@ def _emit_module(folder: str, ops: list[dict]) -> str:
     mutations = [o for o in ops if o["kind"] == "mutation"]
 
     if not queries and not mutations:
-        out += "    return\n"   # empty domain -> register() is a valid no-op
+        out += "    return\n"  # empty domain -> register() is a valid no-op
         return out
 
     # Queries are always registered; a section comment (4-space indent, inside register())
@@ -811,9 +816,13 @@ def generate(
 
     # Finally, regenerate the human-readable catalog table (docs/ENDPOINTS.md).
     endpoints_doc.parent.mkdir(parents=True, exist_ok=True)
-    doc_lines = ["# GreyMatter MCP — Tool Catalog", "",
-                 "Generated from the Postman collection. Do not edit by hand.", ""]
-    total = 0   # running count of operations, used both in the doc header and the final print
+    doc_lines = [
+        "# GreyMatter MCP — Tool Catalog",
+        "",
+        "Generated from the Postman collection. Do not edit by hand.",
+        "",
+    ]
+    total = 0  # running count of operations, used both in the doc header and the final print
     for mod, ops in by_module.items():
         doc_lines.append(f"## {ops[0]['folder']} (`{mod}.py`)")
         doc_lines.append("")
@@ -855,9 +864,7 @@ def _resolve_collection_path(raw: str) -> Path:
     try:
         resolved.relative_to(base)
     except ValueError:
-        raise ValueError(
-            f"Collection path must stay within {base} (got {resolved})"
-        ) from None
+        raise ValueError(f"Collection path must stay within {base} (got {resolved})") from None
     return resolved
 
 

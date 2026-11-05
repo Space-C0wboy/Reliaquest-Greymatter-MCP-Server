@@ -48,12 +48,11 @@ def test_multiple_query_operations_are_not_a_mutation():
 
 
 def test_fragment_then_query_then_mutation_is_detected():
-    assert is_mutation_document(
-        "fragment f on T { x } query a { ...f } mutation b { y }"
-    )
+    assert is_mutation_document("fragment f on T { x } query a { ...f } mutation b { y }")
 
 
 # --- string-literal handling (Codex review: braces/keywords inside string values) ---
+
 
 def test_brace_inside_string_does_not_misclassify_query():
     # The closing brace and the word "mutation" live inside a string value; this is
@@ -88,6 +87,7 @@ async def _get_tool_fn(read_only: bool):
 async def test_graphql_query_blocks_mutation_when_read_only(monkeypatch):
     async def fake_exec(query, variables=None, *, customer_slug=None):
         return {"should_not": "run"}
+
     monkeypatch.setattr("greymatter_mcp.tools.graphql.execute_operation", fake_exec)
     fn = await _get_tool_fn(read_only=True)
     with pytest.raises(ValueError):
@@ -97,6 +97,7 @@ async def test_graphql_query_blocks_mutation_when_read_only(monkeypatch):
 async def test_graphql_query_allows_query_when_read_only(monkeypatch):
     async def fake_exec(query, variables=None, *, customer_slug=None):
         return {"ok": True}
+
     monkeypatch.setattr("greymatter_mcp.tools.graphql.execute_operation", fake_exec)
     fn = await _get_tool_fn(read_only=True)
     out = await fn(query="query { incidents { totalCount } }")
@@ -108,6 +109,7 @@ async def test_read_only_allows_query_with_brace_in_string(monkeypatch):
     # blocked by read-only mode (Codex review regression).
     async def fake_exec(query, variables=None, *, customer_slug=None):
         return {"ok": True}
+
     monkeypatch.setattr("greymatter_mcp.tools.graphql.execute_operation", fake_exec)
     fn = await _get_tool_fn(read_only=True)
     out = await fn(query='query { search(q: "} mutation") { id } }')
