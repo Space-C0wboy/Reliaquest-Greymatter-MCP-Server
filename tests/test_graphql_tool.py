@@ -80,7 +80,7 @@ def test_string_default_value_with_brace_is_not_a_mutation():
 async def _get_tool_fn(read_only: bool):
     mcp = FastMCP(name="t")
     gql_tool.register(mcp, read_only=read_only)
-    tools = await mcp.get_tools()
+    tools = {t.name: t for t in await mcp.list_tools()}
     tool = tools["graphql_query"]
     return getattr(tool, "fn", None) or getattr(tool, "_fn", None) or tool
 
