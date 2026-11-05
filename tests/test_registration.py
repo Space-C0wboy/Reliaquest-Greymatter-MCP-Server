@@ -14,7 +14,7 @@ def _env(monkeypatch):
 
 
 async def _tool_names(mcp) -> set[str]:
-    tools = await mcp.get_tools()
+    tools = {t.name: t for t in await mcp.list_tools()}
     return set(tools.keys())
 
 
