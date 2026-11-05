@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.1.7] - 2026-11-05
+
+### Changed
+- Moved to **fastmcp 4** (mcp SDK 2.3). Tool input schemas now carry `additionalProperties: false`, so calls with unexpected arguments are rejected.
+- Dependency updates, including security fixes: authlib 1.9.1, joserfc 1.7.6, opentelemetry-api 1.45.1, mcp 1.30, pytest 9.
+
+### CI
+- Workflows run with a read-only token by default; jobs that publish get only the grants they need.
+- ruff pinned at 0.17.3 with a `ruff format --check` step; the codebase is formatted.
+- GitHub Actions pinned to full-length commit SHAs; Dependabot runs weekly with grouped minor/patch updates.
+
 ## [0.1.6] - 2026-06-10
 ### Fixed
 - `is_mutation_document` now ignores GraphQL string literals when scanning, so a `}` or
