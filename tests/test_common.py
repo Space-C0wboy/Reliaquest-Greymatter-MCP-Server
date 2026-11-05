@@ -12,7 +12,7 @@ def test_coerce_json_parses_object_and_array_strings():
 
 
 def test_coerce_json_leaves_scalars_and_non_json_untouched():
-    assert coerce_json("T18w") == "T18w"          # cursor string
+    assert coerce_json("T18w") == "T18w"  # cursor string
     assert coerce_json("incident-123") == "incident-123"  # id string
     assert coerce_json("{not valid json") == "{not valid json"  # unparseable -> kept
     assert coerce_json('"just a string"') == '"just a string"'  # parses to str -> kept as-is

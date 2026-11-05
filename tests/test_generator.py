@@ -98,14 +98,36 @@ def test_duplicate_operation_raises(tmp_path):
     collection = {
         "info": {"name": "Dup"},
         "item": [
-            {"name": "Things", "item": [
-                {"name": "Queries", "item": [
-                    {"name": "thing", "request": {"method": "POST", "body": {"mode": "graphql",
-                        "graphql": {"query": "query thing { a }", "variables": ""}}}},
-                    {"name": "thing2", "request": {"method": "POST", "body": {"mode": "graphql",
-                        "graphql": {"query": "query thing { b }", "variables": ""}}}},
-                ]},
-            ]},
+            {
+                "name": "Things",
+                "item": [
+                    {
+                        "name": "Queries",
+                        "item": [
+                            {
+                                "name": "thing",
+                                "request": {
+                                    "method": "POST",
+                                    "body": {
+                                        "mode": "graphql",
+                                        "graphql": {"query": "query thing { a }", "variables": ""},
+                                    },
+                                },
+                            },
+                            {
+                                "name": "thing2",
+                                "request": {
+                                    "method": "POST",
+                                    "body": {
+                                        "mode": "graphql",
+                                        "graphql": {"query": "query thing { b }", "variables": ""},
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
         ],
     }
     col = tmp_path / "dup.json"
@@ -180,13 +202,29 @@ def test_emitted_code_safe_with_special_chars(tmp_path):
     collection = {
         "info": {"name": "Weird"},
         "item": [
-            {"name": 'Weird "Folder"\\Name', "item": [
-                {"name": "Queries", "item": [
-                    {"name": "doThing", "request": {"method": "POST", "body": {"mode": "graphql",
-                        "graphql": {"query": "query doThing($q: String) { a }",
-                                     "variables": "{\"q\": \"line1\\nline2\"}"}}}},
-                ]},
-            ]},
+            {
+                "name": 'Weird "Folder"\\Name',
+                "item": [
+                    {
+                        "name": "Queries",
+                        "item": [
+                            {
+                                "name": "doThing",
+                                "request": {
+                                    "method": "POST",
+                                    "body": {
+                                        "mode": "graphql",
+                                        "graphql": {
+                                            "query": "query doThing($q: String) { a }",
+                                            "variables": '{"q": "line1\\nline2"}',
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
         ],
     }
     col = tmp_path / "weird.json"

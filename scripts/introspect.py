@@ -76,18 +76,18 @@ def _sdl_from_introspection(schema: dict) -> str:
     for t in sorted(schema["types"], key=lambda x: x.get("name") or ""):  # stable, sorted output
         name = t.get("name") or ""
         if name.startswith("__"):
-            continue   # skip introspection meta-types (e.g. __Type, __Schema)
+            continue  # skip introspection meta-types (e.g. __Type, __Schema)
         kind = t.get("kind")
         if kind in ("OBJECT", "INPUT_OBJECT", "INTERFACE"):
             lines.append(f"{kind} {name} {{")
             # Objects/interfaces expose "fields"; input objects expose "inputFields".
-            for f in (t.get("fields") or t.get("inputFields") or []):
+            for f in t.get("fields") or t.get("inputFields") or []:
                 lines.append(f"  {f['name']}")
             lines.append("}")
         elif kind == "ENUM":
             vals = ", ".join(v["name"] for v in (t.get("enumValues") or []))
             lines.append(f"ENUM {name} {{ {vals} }}")
-        lines.append("")   # blank line between types for readability
+        lines.append("")  # blank line between types for readability
     return "\n".join(lines)
 
 
@@ -104,12 +104,12 @@ def main() -> int:
     cfg = get_config()
     headers = {"X-API-KEY": cfg.api_key, "Content-Type": "application/json"}
     if cfg.customer_slug:
-        headers["x-reliaquest-customer"] = cfg.customer_slug   # target a specific OpCo
+        headers["x-reliaquest-customer"] = cfg.customer_slug  # target a specific OpCo
 
     resp = httpx.post(
         cfg.base_url, json={"query": _INTROSPECTION_QUERY}, headers=headers, timeout=cfg.timeout
     )
-    resp.raise_for_status()   # raise on HTTP-level failure (4xx/5xx)
+    resp.raise_for_status()  # raise on HTTP-level failure (4xx/5xx)
     payload = resp.json()
     # GraphQL can return HTTP 200 with an "errors" array — treat that as a failure too.
     if payload.get("errors"):
