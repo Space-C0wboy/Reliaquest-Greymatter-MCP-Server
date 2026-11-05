@@ -533,7 +533,7 @@ server = [
 
 [[package]]
 name = "greymatter-mcp"
-version = "0.1.6"
+version = "0.1.7b1"
 source = { editable = "." }
 dependencies = [
     { name = "fastmcp" },
