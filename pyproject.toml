@@ -3,7 +3,7 @@ name = "greymatter-mcp"
 version = "0.1.7"
 description = "MCP server for the ReliaQuest GreyMatter GraphQL API"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 license = { text = "MIT" }
 license-files = []
 authors = [
@@ -17,7 +17,6 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Security",
@@ -56,7 +55,7 @@ packages = ["src/greymatter_mcp"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.format]
 exclude = ["src/greymatter_mcp/tools/_generated/*", "*.md"]  # ruff 0.17 also formats code blocks in Markdown; docs keep their own layout
