@@ -1,7 +1,7 @@
 # ReliaQuest GreyMatter MCP Server
 
 [![PyPI version](https://img.shields.io/pypi/v/greymatter-mcp.svg)](https://pypi.org/project/greymatter-mcp/)
-[![Python versions](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://pypi.org/project/greymatter-mcp/)
+[![Python versions](https://img.shields.io/badge/python-3.11%20%7C%203.12-blue.svg)](https://pypi.org/project/greymatter-mcp/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![CI](https://github.com/Space-C0wboy/Reliaquest-Greymatter-MCP-Server/actions/workflows/ci.yml/badge.svg)](https://github.com/Space-C0wboy/Reliaquest-Greymatter-MCP-Server/actions/workflows/ci.yml)
 

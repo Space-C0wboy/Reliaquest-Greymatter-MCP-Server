@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Security
+- dnspython 2.9.2 (was 2.8.0), fixing excessive CPU use in `dns.name.from_wire_parser()` (high; Dependabot #37).
+  It comes in through pydantic's `email` extra.
+
+### Changed
+- **Python 3.11 or newer is required.** dnspython 2.9 dropped 3.10, which reached end-of-life in October 2026.
+  CI now tests 3.11 and 3.12.
+
 ### Fixed
 - `api_keys` and 21 other tools that select `roles` on a nested object (a user, access group, case, task, ...)
   no longer fail validation with `VariableTypeMismatch` (#32). The live schema types `User.roles(order:)` as

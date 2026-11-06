@@ -18,7 +18,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import random
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from typing import Any
 
@@ -84,10 +84,10 @@ def _parse_retry_after(header_value: str | None) -> float | None:
     # An HTTP-date is always UTC, but a malformed/naive datetime would break the
     # subtraction below, so backfill UTC when no tzinfo is present.
     if when.tzinfo is None:
-        when = when.replace(tzinfo=timezone.utc)
+        when = when.replace(tzinfo=UTC)
     # Convert the absolute instant into a relative "seconds from now"; clamp so a
     # past date doesn't produce a negative sleep.
-    return max(0.0, (when - datetime.now(timezone.utc)).total_seconds())
+    return max(0.0, (when - datetime.now(UTC)).total_seconds())
 
 
 class GreyMatterClient:
