@@ -82,6 +82,32 @@ def apply_type_corrections(query: str) -> str:
     return query
 
 
+_ROLES_CALL = re.compile(r"(?<![A-Za-z0-9_$])roles\s*\(([^)]*)\)")
+_ORDER_ARG = re.compile(r"(?<![A-Za-z0-9_])order\s*:\s*\$\w+\s*,?\s*")
+
+
+def drop_nested_roles_order(query: str) -> str:
+    """Remove the ``order:`` argument from every *nested* ``roles(...)`` selection.
+
+    Why (issue #32): the live schema types ``User.roles(order:)`` as ``RoleFilter``, while the
+    root ``roles`` query takes ``RoleOrder``, so one variable type can't satisfy both and the
+    nested call fails validation even when the variable is null. Most nested selections only
+    fetch ``totalCount``, where ordering means nothing; the few that page ``edges`` fall back to
+    the server's default order. Either way the argument is dropped; run
+    ``_prune_unused_variables`` afterwards to remove the orphaned ``$orderN`` declaration.
+    The root ``roles`` field (brace depth 1) is left alone.
+    """
+
+    def fix(m: re.Match) -> str:
+        if query[: m.start()].count("{") - query[: m.start()].count("}") < 2:
+            return m.group(0)  # the operation's root field
+        args = _ORDER_ARG.sub("", m.group(1)).strip().rstrip(",").strip()
+        head = m.group(0)[: m.group(0).index("(")]
+        return f"{head}({args})" if args else head.rstrip()
+
+    return _ROLES_CALL.sub(fix, query)
+
+
 # Richer, hand-curated descriptions for high-traffic SOC operations. Keyed by GraphQL
 # operation name. The default tool description is just "<folder> · <kind> <op>"; for the
 # operations an analyst reaches for most (incidents, cases, tasks, ...) that is too terse,
@@ -512,7 +538,7 @@ def _collect(collection: dict) -> dict[str, list[dict]]:
         # Correct known vendor-collection typos before anything is parsed out of
         # the document, so the fix lands in both _DOC and the derived parameter
         # descriptions instead of having to be re-applied to the emitted files.
-        query = apply_type_corrections(gql["query"].strip())
+        query = drop_nested_roles_order(apply_type_corrections(gql["query"].strip()))
         kind, op_name, sig = parse_operation(query)
         if not op_name:
             continue  # anonymous/unparseable operation -> can't name a tool, skip it
