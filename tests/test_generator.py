@@ -233,3 +233,32 @@ def test_emitted_code_safe_with_special_chars(tmp_path):
     gen.generate(collection_path=col, out_dir=out_dir, endpoints_doc=tmp_path / "E.md")
     for py in out_dir.glob("*.py"):
         compile(py.read_text(), str(py), "exec")  # must not raise SyntaxError
+
+
+def test_drop_nested_roles_order_removes_order_and_its_variable():
+    # Issue #32: User.roles(order:) is typed RoleFilter in the live schema, not RoleOrder.
+    # Nested roles selections can't take one order type for every parent: drop the argument.
+    gen = _load_generator()
+    q = (
+        "query apiKeys ($first: Int, $filter2: RoleFilter, $order2: RoleOrder) {\n"
+        "    apiKeys { user { roles (filter: $filter2, first: $first, order: $order2) { totalCount } } }\n}"
+    )
+    out = gen._prune_unused_variables(gen.drop_nested_roles_order(q))
+    assert "order" not in out
+    assert "roles (filter: $filter2, first: $first) { totalCount }" in out
+    assert "$filter2: RoleFilter" in out
+
+
+def test_drop_nested_roles_order_keeps_root_roles_query():
+    gen = _load_generator()
+    q = "query roles ($order: RoleOrder) {\n    roles (order: $order) { totalCount }\n}"
+    assert gen.drop_nested_roles_order(q) == q
+
+
+def test_drop_nested_roles_order_handles_order_first_and_alone():
+    gen = _load_generator()
+    q = "query x ($o: RoleOrder, $f: Int) { a { roles (order: $o, first: $f) { totalCount } b { roles (order: $o) { totalCount } } } }"
+    out = gen.drop_nested_roles_order(q)
+    assert "roles (first: $f)" in out
+    assert "b { roles { totalCount } }" in out
+    assert "order:" not in out

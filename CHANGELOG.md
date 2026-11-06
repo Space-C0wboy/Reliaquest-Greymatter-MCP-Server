@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- `api_keys` and 21 other tools that select `roles` on a nested object (a user, access group, case, task, ...)
+  no longer fail validation with `VariableTypeMismatch` (#32). The live schema types `User.roles(order:)` as
+  `RoleFilter` while the root `roles` query takes `RoleOrder`, so the nested `order` argument and its `orderN`
+  parameter are dropped (the root `roles` tool keeps `order`). Nested role lists use the server's default order.
+  The generator applies the same change (`drop_nested_roles_order`), so regeneration keeps it.
+
 ## [0.1.7] - 2026-11-05
 
 ### Changed
